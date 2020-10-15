@@ -1,6 +1,6 @@
 ;;; eev-testblocks.el - create "test blocks" using multiline comments.
 
-;; Copyright (C) 2019 Free Software Foundation, Inc.
+;; Copyright (C) 2019,2020 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    2019sep29
+;; Version:    2020oct10
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-testblocks.el>
@@ -32,9 +32,16 @@
 
 ;;; Commentary:
 
-;; A "test block" is a multiline comment that... see:
+;; A "test block" in a script is a multiline comment that contains
+;; interactive tests. See:
 ;;
 ;;   (find-eepitch-intro "3. Test blocks")
+;;   (find-eepitch-intro "3.1. `find-eeit-links'")
+
+
+;; «.ee-insert-test»	(to "ee-insert-test")
+;; «.examples»		(to "examples")
+
 
 
 
@@ -53,17 +60,48 @@
 (defalias 'eeit 'ee-insert-test)
 
 (defun ee-insert-test ()
-  "Insert an \"test block\" - an eepitch block in a multiline comment."
+  "Insert a \"test block\" - an eepitch block in a multiline comment."
   (interactive)
-  (cond ((eq major-mode 'lua-mode)    (ee-insert-test-lua))
-        ((eq major-mode 'python-mode) (ee-insert-test-python))
-        ((eq major-mode 'ruby-mode)   (ee-insert-test-ruby))
-        ((eq major-mode 'sh-mode)     (ee-insert-test-sh))
-        ((eq major-mode 'tcl-mode)    (ee-insert-test-tcl))
-        ((eq major-mode 'idris-mode)  (ee-insert-test-idris))
-	(t (error "ee-insert-test: Unsupported major mode"))))
+  (if (fboundp (intern (format "ee-insert-test-%s" major-mode)))
+      (funcall (intern (format "ee-insert-test-%s" major-mode)))
+    (error "ee-insert-test: Unsupported major mode: %s" major-mode)))
 
-(defun ee-insert-test-lua ()
+
+;;;                                 _           
+;;;   _____  ____ _ _ __ ___  _ __ | | ___  ___ 
+;;;  / _ \ \/ / _` | '_ ` _ \| '_ \| |/ _ \/ __|
+;;; |  __/>  < (_| | | | | | | |_) | |  __/\__ \
+;;;  \___/_/\_\__,_|_| |_| |_| .__/|_|\___||___/
+;;;                          |_|                
+;;
+;; «examples»  (to ".examples")
+;; See: (find-eepitch-intro "3.1. `find-eeit-links'")
+
+(defun ee-insert-test-haskell-mode ()
+  (interactive)
+  (insert (format "
+{-
+ (eepitch-ghci)
+ (eepitch-kill)
+ (eepitch-ghci)
+:load %s
+
+-}
+" (buffer-name))))
+
+(defun ee-insert-test-julia-mode ()
+  (interactive)
+  (insert (format "
+#=
+ (eepitch-julia)
+ (eepitch-kill)
+ (eepitch-julia)
+include(\"%s\")
+
+=#
+" (buffer-name))))
+
+(defun ee-insert-test-lua-mode ()
   (interactive)
   (insert (format "
 --[[
@@ -75,7 +113,7 @@ dofile \"%s\"
 --]]
 " (buffer-name))))
 
-(defun ee-insert-test-python ()
+(defun ee-insert-test-python-mode ()
   (interactive)
   (insert (format "
 \"\"\"
@@ -87,7 +125,7 @@ execfile(\"%s\", globals())
 \"\"\"
 " (buffer-name))))
 
-(defun ee-insert-test-ruby ()
+(defun ee-insert-test-ruby-mode ()
   (interactive)
   (insert (format "
 =begin
@@ -99,7 +137,7 @@ load \"%s\"
 =end
 " (buffer-name))))
 
-(defun ee-insert-test-sh ()
+(defun ee-insert-test-sh-mode ()
   (interactive)
   (insert (format "
 : <<'%%%%%%%%%%'
@@ -111,7 +149,7 @@ load \"%s\"
 %%%%%%%%%%
 " (buffer-name))))
 
-(defun ee-insert-test-tcl ()
+(defun ee-insert-test-tcl-mode ()
   (interactive)
   (insert (format "
 set COMMENTED_OUT {
@@ -123,13 +161,16 @@ source %s
 }
 " (buffer-name))))
 
-(defun ee-insert-test-idris ()
+(defun ee-insert-test-tuareg-mode ()
   (interactive)
   (insert (format "
-{-
- (eepitch-to-buffer \"*idris-repl*\")
+(*
+ (eepitch-ocaml)
+ (eepitch-kill)
+ (eepitch-ocaml)
+#use \"%s\";;
 
--}
+*)
 " (buffer-name))))
 
 
