@@ -2,7 +2,7 @@
 ;; The basic hyperlinks are the ones that do not depend on templates,
 ;; and that are not created by `code-c-d' and friends.
 
-;; Copyright (C) 1999-2019 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2020 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -21,7 +21,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    2020oct02
+;; Version:    2020dec29
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-blinks.el>
@@ -53,6 +53,7 @@
 ;; «.find-estring»		(to "find-estring")
 ;; «.find-sh»			(to "find-sh")
 ;; «.find-man»			(to "find-man")
+;; «.find-man-bug»		(to "find-man-bug")
 ;; «.find-w3m»			(to "find-w3m")
 ;; «.find-Package»		(to "find-Package")
 ;; «.find-epp»			(to "find-epp")
@@ -82,7 +83,8 @@
 ;;
 (autoload 'find-function-read "find-func")
 (autoload 'pp-to-string "pp")
-(autoload 'Man-fontify-manpage "man" nil t)
+(autoload 'Man-translate-references "man")
+(autoload 'Man-fontify-manpage      "man" nil t)
 (autoload 'word-at-point "thingatpt")
 (autoload 'list-iso-charset-chars     "mule-diag")
 (autoload 'list-non-iso-charset-chars "mule-diag")
@@ -99,9 +101,10 @@
 ;; «eek» (to ".eek")
 ;; See: (find-eev-quick-intro "3. Elisp hyperlinks" "eek")
 
-(defun eek (str) (interactive "sKeys: ")
+(defun eek (str)
   "Execute STR as a keyboard macro. See `edmacro-mode' for the exact format.\n
 An example: (eek \"C-x 4 C-h\")"
+  (interactive "sKeys: ")
   (execute-kbd-macro (read-kbd-macro str)))
 
 
@@ -117,6 +120,7 @@ An example: (eek \"C-x 4 C-h\")"
 ;; «ee-goto-position»  (to ".ee-goto-position")
 ;; Support for pos-spec-lists in hyperlinks.
 ;; See: (find-eval-intro "6. Refining hyperlinks")
+;;      (find-refining-intro "1. Pos-spec-lists")
 
 (defun ee-goto-position (&optional pos-spec &rest rest)
   "Process the \"absolute pos-spec-lists\" arguments in hyperlink functions.
@@ -636,27 +640,84 @@ This is like `find-sh' but sets the buffer's default-directory to DIR."
 ;; Hyperlinks to manpages.
 ;; Tests:
 ;;   (find-man "1 cat")
+;;   (find-man "bash(1)")
+;;   (find-man "bash(1)" "multi-character")
 
 (defvar ee-find-man-flag          nil "See `find-man'.")
+(defvar ee-find-man-buffer        nil "See `find-man'.")
 (defvar ee-find-man-pos-spec-list nil "See `find-man'.")
-
-;; See: (find-elnode "Advising Functions")
-;;      (find-elnode "Porting old advice")
-;;      (find-efunctiondescr 'defadvice)
-(defadvice Man-notify-when-ready (around find-man (man-buffer) activate)
-  "After rendering a manpage jump to `ee-find-man-pos-spec-list'."
-  (if (not ee-find-man-flag)
-      ad-do-it
-    (switch-to-buffer man-buffer)
-    (apply 'ee-goto-position ee-find-man-pos-spec-list)
-    (setq ee-find-man-flag nil)))
 
 (defun find-man (manpage &rest pos-spec-list)
   "Hyperlink to a manpage."
   (interactive (list (ee-manpagename-ask)))
-  (setq ee-find-man-flag t
-	ee-find-man-pos-spec-list pos-spec-list)
-    (man manpage))
+  (setq manpage (Man-translate-references manpage))
+  ;;
+  ;; Set the variables used by `ee-find-man-goto-pos-spec'.
+  (setq ee-find-man-flag t)
+  (setq ee-find-man-buffer (concat "*Man " manpage "*"))
+  (setq ee-find-man-pos-spec-list pos-spec-list)
+  ;;
+  ;; See: (find-evardescr 'Man-notify-method "pushy" "current window")
+  (let ((Man-notify-method 'pushy))
+    ;;
+    ;; This call to `man' will run `ee-find-man-goto-pos-spec' after
+    ;; the manpage is rendered - because of the `advice-add' below.
+    ;; This is a dirty trick!... see:
+    ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2020-12/msg01100.html
+    ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2020-12/msg01102.html
+    (man manpage)))
+
+(defun ee-find-man-goto-pos-spec (&rest rest)
+  "An internal function used by `find-man'."
+  (when ee-find-man-flag
+    (setq ee-find-man-flag nil)
+    (with-current-buffer ee-find-man-buffer
+      (apply 'ee-goto-position ee-find-man-pos-spec-list))))
+    
+(advice-add 'Man-bgproc-sentinel :after 'ee-find-man-goto-pos-spec)
+
+
+;; 2020dec29: all this block was commented out.
+;;
+;; (defun find-man (manpage &rest pos-spec-list)
+;;   "Hyperlink to a manpage."
+;;   (interactive (list (ee-manpagename-ask)))
+;;   (setq ee-find-man-flag t
+;; 	ee-find-man-pos-spec-list pos-spec-list)
+;;     (man manpage))
+;;
+;; ;; See: (find-elnode "Advising Functions")
+;; ;;      (find-elnode "Porting old advice")
+;; ;;      (find-efunctiondescr 'defadvice)
+;; (defadvice Man-notify-when-ready (around find-man (man-buffer) activate)
+;;   "After rendering a manpage jump to `ee-find-man-pos-spec-list'."
+;;   (if (not ee-find-man-flag)
+;;       ad-do-it
+;;     (switch-to-buffer man-buffer)
+;;     (apply 'ee-goto-position ee-find-man-pos-spec-list)
+;;     (setq ee-find-man-flag nil)))
+;;
+;; «find-man-bug»  (to ".find-man-bug")
+;; Note: find-man has an open bug that I did not have time to fix yet...
+;; an example:
+;;
+;;   (find-man "1 git-commit")
+;;   (find-man "1 git-commit" "-m <msg>, --message=<msg>")
+;;
+;; The second find-man link should run the
+;;
+;;   (ee-goto-position "-m <msg>, --message=<msg>")
+;;
+;; AFTER the man page gets completely rendered, but the mechanism that
+;; delays its execution until the rendering it done it currently broken,
+;; and the ee-goto-position runs too soon. A workaround for that is to
+;; run the
+;;
+;;   (find-man "1 git-commit")
+;; 
+;; to render the manpage, then bury its buffer with M-K, then run this:
+;; 
+;;   (find-man "1 git-commit" "-m <msg>, --message=<msg>")
 
 ;; Missing: find-woman.
 ;; (find-node "(woman)Top")
@@ -778,6 +839,13 @@ explicitly. Try this: (progn (message \"foo\") \"bar\")"
   "Visit a temporary buffer containing a pretty-printed version of OBJECT."
   (let ((ee-buffer-name (or ee-buffer-name "*pp*")))
     (apply 'find-estring-elisp (pp-to-string object) pos-spec-list)))
+
+(defun find-eppp (object &rest pos-spec-list)
+  "Visit a temporary buffer containing a pretty-printed version of OBJECT.
+This is a variant of `find-epp' that is more suitable for objects
+that `find-epp' would print in a single line."
+  (let ((ee-buffer-name (or ee-buffer-name "*pp*")))
+    (apply 'find-estring-elisp (ee-ppp0 object) pos-spec-list)))
 
 (defun find-efunctionpp (symbol &rest pos-spec-list)
 "Visit a temporary buffer containing the pretty-printed Lisp code for SYMBOL."

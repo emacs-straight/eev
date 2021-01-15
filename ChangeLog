@@ -1,3 +1,188 @@
+2021-01-02  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev.el: bumped the version. Changed the "Package-Requires" to
+	Emacs 24.4 because of the new `advice-add' used by `find-man'.
+
+	* eev-pkg.el: same.
+
+	* eev-intro.el (find-audiovideo-intro): new section: "7.2.
+	`find-eevvideo-links'".
+
+	* eev-elinks.el (ee-find-efunction-links): added a line like this:
+	`(find-epp (assoc FILENAME load-history))'.
+
+	* eev-tlinks.el (ee-code-psnevideo): added an `interactive'.
+	(ee-code-eevvideo): added an `interactive'.
+
+	* eev-intro.el (find-videos-intro): rewrote the beginning.
+
+2021-01-01  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (ee-psnevideo-links): cosmetic changes.
+
+2020-12-31  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-hlinks.el (ee-epackage-re-27): new variable.
+	(ee-epackage-bufferp): use `ee-epackage-re-27'.
+
+2020-12-29  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (Man-translate-references): add autoload.
+	(Man-notify-when-ready): removed the defadvice.
+	(ee-find-man-buffer): new variable.
+	(ee-find-man-goto-pos-spec): new function.
+	(Man-bgproc-sentinel): new advice-add.
+	(find-man): rewrote completely.
+
+2020-12-28  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-code.el (ee-code-c-d-:gz): commented out the
+	`(ee-use-{c}-tags)'.
+
+	* eev-intro.el (find-anchors-intro): rewrote completely.
+
+2020-12-22  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-hlinks.el (ee-find-dired-links): new function.
+	(ee-find-here-links): added a line that runs
+	`(ee-find-dired-links)' when `(ee-dired-bufferp)' is true - but
+	that line is currently commented out.
+
+	* eev-intro.el (find-eev-intro): added a new section: "4. The
+	prefix `find-'".
+
+2020-12-21  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-intro.el (find-audiovideo-intro): rewrote the section 4.1
+	completely. It is now titled "4.1. `find-extra-file-links'".
+
+	* eev-tlinks.el (find-extra-file-links): fixed the link to
+	`(find-audiovideo-intro)'.
+
+2020-12-20  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-code.el (ee-code-c-d-:w3m): new function.
+	(ee-code-c-d-:tags): new function.
+	(ee-code-c-d-base): moved the `defun find-{c}w3m', the `defun
+	find-{c}tags', and their support functions to `ee-code-c-d-:w3m'
+	and `ee-code-c-d-:tags'.
+
+2020-12-17  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* README.org: new file.
+
+	* README-old.md: renamed "README.md" to "README-old.md".
+
+	* eev-intro.el (find-little-languages-intro): new function.
+
+2020-12-16  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (find-esetkey-links): new function.
+	(ee-read-command): new function.
+	(ee-command-at-point): new function.
+
+	* eev-testblocks.el (ee-insert-test-org-mode): new function.
+
+2020-12-06  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-wrap.el (ee-ppp0): new function.
+
+	* eev-blinks.el (find-eppp): new function.
+
+	* eev-elinks.el (ee-find-efunction-links): added a line with
+	`(find-eppp (mapcar 'car load-history))'.
+
+2020-12-03  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el (ee-pdftools-revert-all): new function.
+
+2020-11-30  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-eval.el (ee-eval-last-sexp-7): new function.
+	(ee-eval-last-sexp): added support for `ee-eval-last-sexp-7'.
+
+2020-11-29  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eepitch.el (eepitch-line): new variable.
+	(eepitch-line): when the value in the variable `eepitch-line' is
+	non-nil then run `(funcall eepitch-line line)' instead of the
+	default behavior.
+	(eepitch): setq eepitch-line to nil.
+	(eepitch-vterm): new function.
+	(eepitch-line-vterm): new function.
+
+2020-11-26  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-code.el (ee-code-c-d-base): added a link to
+	`find-eev-quick-intro'.
+
+2020-11-16  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eepitch.el (eepitch-python2): new function.
+	(eepitch-python): make it use python3.
+
+2020-11-01  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (find-grep-links): rewrote using
+	`find-find-links-links-new' and added documentation.
+
+2020-10-30  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (find-youtubedl-links): rewrote using
+	`find-find-links-links-new'. Deleted the sexps with `find-video'
+	and `code-video' that would point to a partially downloaded video.
+	(ee-youtubedl-dirs): new variable.
+	(ee-youtubedl-dir-links): new function.
+	(ee-youtubedl-dir2, ee-youtubedl-dir3, ee-youtubedl-dir4):
+	deleted.
+
+	* eev-elinks.el (find-eface-links, find-color-links): rewrote
+	using `find-find-links-links-new'.
+
+2020-10-27  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-audiovideo.el (ee-find-mpv-video): use "--start=1:23"
+	instead of "--start 1:23".
+
+	* eev-pdflike.el (ee-code-pdfbackend, ee-code-pdftextbackend): add
+	the missing backslashes.
+
+2020-10-24  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (find-man): document an open bug.
+
+2020-10-18  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (find-eevvideo-links, code-eevvideo)
+	(find-code-eevvideo, ee-code-eevvideo): new functions.
+
+	* eev-intro.el (find-audiovideo-intro): added two new sections:
+	"7. `code-psnevideo'" and "7.1. `code-eevvideo'".
+
+2020-10-17  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (find-psnevideo-links, ee-psnevideo-links)
+	(ee-psnevideo-download-if-needed, ee-psnevideo-download)
+	(ee-psnevideo-download0): new functions.
+
+	* eev-audiovideo.el (ee-time-to-youtube-time): new function.
+
+2020-10-16  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el: Rewrote most of the file to use the cleaner
+	`code-*backend*' functions instead of the older
+	`code-xxxpdf*-family' functions, that were much harder to
+	understand. Also rewrote lots of comments.
+
+	* eev-pdflike.el (ee-fname-page-to-url): new function.
+	(ee-find-googlechrome-page): new function.
+
+2020-10-15  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el (code-pdfbackend, find-code-pdfbackend)
+	(ee-code-pdfbackend, code-pdftextbackend)
+	(find-code-pdftextbackend, ee-code-pdftextbackend): new functions.
+
 2020-10-13  Eduardo Ochs  <eduardoochs@gmail.com>
 
 	* eev-intro.el (find-git-intro): new function.

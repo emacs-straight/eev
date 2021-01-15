@@ -1,12 +1,12 @@
 ;;; eev.el --- Support for e-scripts (eepitch blocks, elisp hyperlinks, etc)  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2019,2020 Free Software Foundation, Inc.
+;; Copyright (C) 2019-2021 Free Software Foundation, Inc.
 
 ;; Author: Eduardo Ochs <eduardoochs@gmail.com>
-;; Package-Requires: ((emacs "24.1"))
+;; Package-Requires: ((emacs "24.4"))
 ;; Keywords: lisp e-scripts
 ;; URL: http://angg.twu.net/#eev
-;; Version: 20201013
+;; Version: 20210102
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,11 +23,20 @@
 
 ;;; Commentary:
 
+;; I used to call eev a "tool for automating almost everything" and
+;; "my project to save the world with Free Software". In more concrete
+;; terms, eev is a library for Emacs that lets us create "executable
+;; logs" of what we do in a format that is reasonably easy to read and
+;; to modify, and that lets us "play back" those logs step by step in
+;; any order.
 ;;
+;; See the file README.org - or <http://angg.twu.net/#eev>, or
+;; <https://github.com/edrx/eev#introduction> - for more information
+;; and lots of links.
+;;
+;; See eev-beginner.el for how to load and start eev.
 
 ;;; Code:
-
-
 
 (provide 'eev)
 ;;; eev.el ends here

@@ -1,6 +1,6 @@
 ;;; eev-intro.el --- sandboxed tutorials for eev, like (find-eev-quick-intro)
 
-;; Copyright (C) 2013-2020 Free Software Foundation, Inc.
+;; Copyright (C) 2013-2021 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    2020oct13
+;; Version:    2021jan02
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-intro.el>
@@ -92,7 +92,7 @@
 ;; «.find-org-intro»		(to "find-org-intro")
 ;; «.find-escripts-intro»	(to "find-escripts-intro")
 ;; «.find-git-intro»		(to "find-git-intro")
-
+;; «.find-little-languages-intro»	(to "find-little-languages-intro")
 ;; «.find-windows-beginner-intro»	(to "find-windows-beginner-intro")
 
 ;; Videos:
@@ -1436,7 +1436,7 @@ hyperlinks are all equivalent:
   (find-fline  \"~/eev2/eev-blinks.el\" \"«find-wottb»\")
 
 You can use this - or the shorter hyperlinks to anchors in
-section 9.3 - to point to anchors or to e-script blocks in your
+section 9.2 - to point to anchors or to e-script blocks in your
 files.
 
 
@@ -1545,7 +1545,7 @@ and that code
      run   (find-efile \"files.el.gz\")
      if the file \"files.el\" is not found,
 
-  3) makes (find-eev     \"eev-blinks.el\" \"find-wottb\")
+  3) makes (find-eev     \"eev-blinks.el\"  \"find-wottb\")
      run:  (find-eevfile \"eev-blinks.el\" \"«find-wottb»\")
      or actually: (find-anchor (ee-eevfile \"eev-blinks.el\") \"find-wottb\")
 
@@ -1795,7 +1795,8 @@ This section was moved to:
 Source code:  (find-efunction 'find-emacs-keys-intro)
 More intros:  (find-eev-quick-intro)
               (find-eev-intro)
-              (find-eval-intro)
+              (find-here-links-intro)
+              (find-refining-intro)
               (find-eepitch-intro)
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
@@ -1840,6 +1841,7 @@ Some other keys that create buffers with elisp hyperlinks:
   M-h M-f   - (find-eev-quick-intro \"4.2. `find-ekey-links' and friends\")
   M-h M-p   - (find-pdf-like-intro \"9. Generating three pairs\")
               (find-pdf-like-intro \"9. Generating three pairs\" \"M-h M-p\")
+  M-h M-e   - (find-audiovideo-intro \"4.1. `find-extra-file-links'\")
     See also: (find-links-intro \"5. The first line regenerates the buffer\")
 
 
@@ -2440,10 +2442,9 @@ See:
 Source code:  (find-eev \"eev-intro.el\" \"find-eev-intro\")
 Main intros:  (find-eev-quick-intro)
               (find-emacs-keys-intro)
-              (find-eval-intro)
               (find-eepitch-intro)
-              (find-wrap-intro)
-              (find-eev-intro)
+              (find-here-links-intro)
+              (find-refining-intro)
 Index to the source files: (find-eev \"eev-load.el\")
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
@@ -2587,8 +2588,65 @@ For the full lists of keybindings, see:
   (find-eev \"eev-mode.el\" \"eev-mode\")
   (find-efunctiondescr        'eev-mode)
   (find-eminormodekeymapdescr 'eev-mode)
+  (find-ekeymapdescr           eev-mode-map)
   (find-efunctiondescr        'eev-avadj-mode)
   (find-eminormodekeymapdescr 'eev-avadj-mode)
+  (find-ekeymapdescr           eev-avadj-mode-map)
+
+
+
+
+4. The prefix `find-'
+=====================
+Some people feel that the functions defined by eev should not use
+the prefix `find-', that they should use `eefind-' instead...
+
+The code below can be used to list all the `find-*' functions
+defined by eev - including the `find-*' functions defined by
+calls to `code-c-d', `code-pdf-page', and friends:
+
+  (require 'dash)
+  ;; See: https://github.com/magnars/dash.el#functions
+
+  ;; Tests:
+  ;; (find-epp        (assoc (symbol-file 'find-pdf-page 'defun) load-history))
+  ;; (setq a-lh-entry (assoc (symbol-file 'find-pdf-page 'defun) load-history))
+  ;; (find-epp                    a-lh-entry)
+  ;; (find-epp (ee-lh-entry-finds a-lh-entry))
+  ;;
+  (defun ee-lh-entry-finds (lh-entry)
+    \"Filter a load-history entry to keep only the `(defun . find-*)'s\"
+    (let* ((a (--filter (consp it) lh-entry))
+           (b (--filter (eq (car it) 'defun) a))
+           (c (--filter (string-match \"^find-\" (symbol-name (cdr it))) b)))
+      (cons (car lh-entry) c)))
+
+  (defun ee-lh-eev-finds ()
+    \"Filter the load-history - returns a stripped version with only
+  the eev files and the `(defun . find-*)'s in them.\"
+    (let* ((lh-eevs (--filter (string-match \"eev\" (car it)) load-history)))
+      (-map 'ee-lh-entry-finds lh-eevs)))
+
+  (defun ee-lh-eev-find-functions ()
+    \"Return a list of all `find-*' functions defined by eev.\"
+    (let* ((a (ee-lh-eev-finds))
+           (b (-map 'cdr a))
+	   (c (apply 'append b)))
+        (-map 'cdr c)))
+
+  ;; Tests:
+  ;; (find-epp (ee-lh-eev-finds))
+  ;; (find-eppp (ee-lh-eev-find-functions))
+
+It should be possible to use that list of functions to produce an
+experimental variant of eev in which all these `find-*' functions
+become `eefind-*' functions, and in which there a function that
+creates `find-*' aliases for all these `eefind-*' functions. I
+will try to implement that a prototype for that in the first
+months of 2021, but I am afraid that I won't use it much myself -
+I think that this is ugly. If you you like to discuss, test, or
+implement parts of this, please get in touch!
+
 " rest)))
 
 ;; (find-eev-intro)
@@ -2814,14 +2872,14 @@ and the \"1\" is a reference to this:
 Note that `M-h M-1' undoes what `M-h M-3' did. In a figure:
 
    _______________           _____________________           ________________ 
-  |               |	    |          |          |	    |                |
-  |               |	    |          |  elinks  |	    |                |
-  |               | 	    |          |  buffer  |	    |                |
+  |               |         |          |          |         |                |
+  |               |         |          |  elinks  |         |                |
+  |               |         |          |  buffer  |         |                |
   |    target     | M-h M-3 |  target  |__________| M-h M-1 |     target     |
   |    buffer     | ------> |  buffer  |          | ------> |     buffer     |
-  |               |	    |          |  notes   |	    |                |
-  |               |	    |          |  buffer  |	    |                |
-  |_______________|	    |__________|__________|	    |________________|
+  |               |         |          |  notes   |         |                |
+  |               |         |          |  buffer  |         |                |
+  |_______________|         |__________|__________|         |________________|
 
 
 
@@ -2904,7 +2962,9 @@ The next steps are to learn how:
 \(Re)generate: (find-refining-intro)
 Source code:  (find-efunction 'find-refining-intro)
 More intros:  (find-eev-quick-intro)
-              (find-eval-intro)
+              (find-eev-intro)
+              (find-emacs-keys-intro)
+              (find-here-links-intro)
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
 
@@ -3143,7 +3203,7 @@ To rebind `M-h M-h' to its original function, run this:
 
 or restart Emacs.
 
-The big figure below shows all the keys sequences:
+The big figure below shows all the key sequences:
 
    _______________________________________
   |                 |                     |
@@ -5784,131 +5844,123 @@ then you'll be attributing just a \"temporary\" meaning to
 \(Re)generate: (find-anchors-intro)
 Source code:  (find-eev \"eev-intro.el\" \"find-anchors-intro\")
 More intros:  (find-eev-quick-intro)
-              (find-eval-intro)
-              (find-eepitch-intro)
+              (find-here-links-intro)
+              (find-refining-intro)
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
 
 
 
-Note: this intro needs to be rewritten!
-Ideally it should _complement_ the material in:
+Notes: this is an advanced tutorial!
+And it is very incomplete at the moment!
+
+
+
+
+1. Introduction
+===============
+These sections of the main tutorial explain what anchors are, and
+explain two simple ways of creating index/section anchor pairs:
+
   (find-eev-quick-intro \"8. Anchors\")
+  (find-eev-quick-intro \"8.1. Introduction: `to'\")
+  (find-eev-quick-intro \"8.3. Creating index/section anchor pairs\")
+  (find-eev-quick-intro \"8.3. Creating index/section anchor pairs\" \"`M-A'\")
+  (find-eev-quick-intro \"8.4. Creating e-script blocks\")
+  (find-eev-quick-intro \"8.4. Creating e-script blocks\" \"`M-B'\")
 
+and these other sections explain briefly how hyperlinks to
+anchors in other files work,
 
+  (find-eev-quick-intro \"8.5. Hyperlinks to anchors in other files\")
+  (find-eev-quick-intro \"9.2. Extra arguments to `code-c-d'\")
+  (find-eev-quick-intro \"9.2. Extra arguments to `code-c-d'\" \":anchor)\")
+  (find-eev-quick-intro \"9.2. Extra arguments to `code-c-d'\" \"makes (find-eev\")
 
-Introduction: `ee-anchor-format' and `to'
-=========================================
-A hyperlink like
-
-  (to \"foo\")
-
-jumps to the first occurrence of the string \"«foo»\" in the
-current buffer. The way to convert from \"foo\" to \"«foo»\" is
-controlled by the variable `ee-anchor-format', and the sexp
-`(to \"foo\")' is roughly equivalent the third sexp below:
-
-                            ee-anchor-format
-                    (format ee-anchor-format \"foo\")
-  (ee-goto-position (format ee-anchor-format \"foo\"))
-
-We will call strings in `«»'s _anchors_, and we will say
-that `(to \"foo\")' jumps \"to the anchor `foo'\".
-
-Anchors can be used to create sections and indexes, as we shall
-see soon - but due to some old design decisions that I was never
-able to find good alternatives for, this tutorial needs to start
-with a BIG WARNING.
-
-
-
-WARNING: some glyphs need raw-text-unix
-=======================================
-The best way to make anchors stand out is to use colored glyphs
-for them - just like we made `^O's appear as red star glyphs for
-eepitch, as described here:
-
-  (find-eepitch-intro \"\\nRed stars\\n\")
-
-For historical reasons, the glyphs for `«' and `»' defined in
-
-  (find-eev \"eev-anchors.el\")
-
-use the characters 171 and 187; as far as I know, these
-characters are only \"safe\" - in the sense that Emacs will not
-try to convert them to anything else - in unibyte buffers. The
-best way to make sure that anchors with `«»'s will work in a
-certain file is to put a \"Local variables:\" section at the end
-of it, as has been done in this buffer - and use that to set both
-the file coding to raw-text-unix and the value of
-`ee-anchor-format' to \"«%s»\".
-
-Note that if you change a \"Local variables:\" section by hand
-you will probably have to either reload the file or run `M-x
-normal-mode' to make the new settings take effect.
-
-
-
-Indexes
-=======
-In a situation like this,
-
-  «one»   (to \"two\")
-  «two»   (to \"one\")
-
-we have two anchors, and typing `M-e' at the line with the anchor
-\"one\" takes us to the line with the anchor \"two\", and typing
-`M-e' at the line with the anchor \"two\" takes us to the line
-with the anchor \"one\". In a situation like this we say that the
-anchors \"one\" and \"two\" _point to one another_.
-
-In a case like this,
-
-  «.three»   (to \"three\")
-   «three»  (to \".three\")
-
-where the names of two anchors pointing to one another differ by
-an initial dot, we will say that the anchor \".three\" is the
-\"index anchor\", and the anchor \"three\" is the \"section
-anchor\"; and one way to create an index for a file is to group
-all the index anchors together. For an example, see:
-
-  (find-eev \"eev-intro.el\" \".find-eev-intro\")
+but they stop right before explaining how to use them in a
+practical way, i.e., with few keystrokes. This intro is about
+this.
 
 
 
 
-Creating index/section anchor pairs
-===================================
-Use `M-A' (`eewrap-anchor'). Note that this has been briefly
-mentioned here:
 
-  (find-wrap-intro \"All wrapping functions\")
+2. Shrinking
+============
+We saw in
 
-It will convert a line with a syntax like
+  (find-eev-quick-intro \"9.2. Extra arguments to `code-c-d'\" \"makes (find-eev\")
 
-  comment-prefix <anchor-name>
+that these two hyperlinks are equivalent:
 
-into:
+  (find-eevfile \"eev-blinks.el\" \"«find-wottb»\")
+  (find-eev     \"eev-blinks.el\"  \"find-wottb\")
 
-  comment-prefix «.anchor-name»	(to \"anchor-name\")
-  comment-prefix «anchor-name» (to \".anchor-name\")
+The first one searches for a string in \"eev-blinks.el\" in the
+normal way; the second one treats the \"find-wottb\" as a tag,
+wraps it in `«»'s, and then searches for the anchor
+\"«find-wottb»\" in the file \"eev-blinks.el\".
 
-where comment-prefix is any string and anchor-name is a string
-without `<>'s. Note that the `<>'s, which are easy to type, are
-converted into `«»'s, which are harder.
+We will refer to the operation that converts the hyperlink
+
+  (find-eevfile \"eev-blinks.el\")
+
+to
+
+  (find-eev \"eev-blinks.el\")
+
+as _shrinking_ the hyperlink. Eev has a key sequence that does
+that, and for simplicity its behavor is just this: it looks at
+first element of the sexp at eol (the \"head\" of the sexp), and
+if it is a symbol that ends with \"file\" then rewrite the sexp
+replacing the head symbol by it minus its suffix \"file\". That
+key sequence is `M-h M--' (`ee-shrink-hyperlink-at-eol'), and its
+source code is here:
+
+  (find-eev \"eev-edit.el\" \"ee-shrink-hyperlink-at-eol\")
+
+Try it on the two lines below:
+
+  (find-eevfile  \"eev-edit.el\"  \"ee-shrink-hyperlink-at-eol\")
+  (find-eev      \"eev-edit.el\"  \"ee-shrink-hyperlink-at-eol\")
 
 
 
-find-anchor
-===========
-\(find-eev \"eev-anchors.el\")
-\(find-eev \"eev-anchors.el\" \"find-anchor\")
 
-
-code-c-d and :anchor
+3. The preceding tag
 ====================
-\(find-eev \"eev-code.el\" \"ee-code-c-d-:anchor\")
+The key sequence `M-h M-w' copies the current line to the kill
+ring, highlights it for a fraction of a second, and shows the
+message
+
+  \"Copied the current line to the kill ring - use C-y to paste\"
+
+in the echo area. Here are links to its source code and to a
+section of a tutorial that mentions it:
+
+  (find-eev \"eev-edit.el\" \"ee-copy-this-line-to-kill-ring\")
+  (find-refining-intro \"3. Three buffers\" \"M-h M-w\")
+
+When we run `M-h M-w' with a numeric argument - for example, as
+`M-1 M-h M-w' - it highlights and copies to the kill ring the
+\"preceding tag\" instead of the current line; the \"preceding
+tag\" is the string between `«»'s in the anchor closest to the
+point if we search backwards. As an exercise, type `M-1 M-h M-w'
+at some point below, and then use `M-h M-y' (`ee-yank-pos-spec')
+to add it to the hyperlink with `find-anchors-intro' below the
+anchors.
+
+  «first-anchor»
+  «second-anchor»
+  «third-anchor»
+
+  (find-anchors-intro)
+
+
+
+[TO DO: write the other sections!]
+
+
 " rest)))
 
 ;; (find-anchors-intro)
@@ -6101,7 +6153,9 @@ Try: (find-code-pdf      \"CODE\" \"FILE.pdf\")
 \(Re)generate: (find-pdf-like-intro)
 Source code:  (find-eev \"eev-intro.el\" \"find-pdf-like-intro\")
 More intros:  (find-eev-quick-intro)
-              (find-eval-intro)
+              (find-eev-intro)
+              (find-here-links-intro)
+              (find-refining-intro)
               (find-eepitch-intro)
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
@@ -7368,35 +7422,57 @@ Every call to a function with a name like `find-*audio' or
 
 
 
-4.1. `find-code-audiovideo-links'
----------------------------------
-The easist way to produce `code-audio' or `code-video' hyperlinks
-uses `M-h M-a', that calls `find-code-audiovideo-links' and is
-very similar to:
+4.1. `find-extra-file-links'
+----------------------------
+The easiest way to produce `code-audio' and `code-video'
+hyperlinks is with `M-h M-e', that runs `find-extra-file-links'.
+This an experimental feature whose behavior may change soon, but
+here is how it works now.
+
+If you run
+
+  (find-extra-file-links \"/tmp/foo.mp4\")
+
+you will get a temporary buffer whose first line is
+
+  ;; (find-extra-file-links \"/tmp/foo.mp4\" \"{c}\")
+
+and that contains several blocks like this one:
+
+  ;; Links to a video file:
+  ;; (find-video \"/tmp/foo.mp4\")
+  (code-video \"{c}video\" \"/tmp/foo.mp4\")
+  ;; (find-{c}video)
+  ;; (find-{c}video \"0:00\")
+
+If you change the \"{c}\" in the first line to \"FOO\" and
+execute it you will get a buffer generated from the same
+template, but with all the \"{c}\"s replaced by \"FOO\"s. In that
+buffer the block above will become this:
+
+  ;; Links to a video file:
+  ;; (find-video \"/tmp/foo.mp4\")
+  (code-video \"FOOvideo\" \"/tmp/foo.mp4\")
+  ;; (find-FOOvideo)
+  ;; (find-FOOvideo \"0:00\")
+
+The typical way of using `find-extra-file-links' is from dired,
+by placing the cursor on the line of a file that you want to
+create links to, and then typing `M-h M-e'. `M-h M-e' is similar
+to the \"dired half\" of `M-h M-p' - see:
 
   (find-pdf-like-intro \"9. Generating three pairs\")
   (find-pdf-like-intro \"9. Generating three pairs\" \"M-h M-p\")
 
-A test:
+but `M-h M-e' produces many more links.
 
- (eepitch-shell)
- (eepitch-kill)
- (eepitch-shell)
-  mkdir ~/eev-videos/
-  cd    ~/eev-videos/
-  wget -nc http://angg.twu.net/eev-videos/three-keys-2.mp4
-
-  # (find-code-audiovideo-links \"~/eev-videos/three-keys-2.mp4\" \"eevtk2\")
-  # (find-fline \"~/eev-videos/\")
-  # (find-fline \"~/eev-videos/\" \"three-keys-2.mp4\")
-  #   ^ Type `M-h M-a' on the line with the .mp4
-
-\[Todo: explain M-p in eev-avadj-mode]
 
 
 
 4.2. `eewrap-audiovideo'
 ------------------------
+And older, and clumsier, way of creating 
+
 If you type `M-V' (`eewrap-audiovideo') on a line containing a
 shorthand word and a file name of an audio or video file, for
 example, here,
@@ -7552,9 +7628,9 @@ default audio/video file at that timestamp.
 
 
 
-5. Passing options to mplayer
-=============================
-By default mplayer is called with just a few command-line options,
+5. Passing options to mpv
+=========================
+By default mpv is called with just a few command-line options,
 besides the ones that tell it at what position to start playing -
 typically just these for videos,
 
@@ -7563,12 +7639,21 @@ typically just these for videos,
 to make it run in full-screen mode with an on-screen display
 showing the current position, and no options for audio.
 
-If you want to change this you should redefine these functions:
+If you want to change this you should set the variable
+`ee-mpv-video-options'. See:
 
-  (ee-mplayer-video-options)
-  (ee-mplayer-audio-options)
+  (find-efunction 'find-mpv-video)
+  (find-evariable   'ee-mpv-video-options)
 
-
+Here is an example of changing `'ee-mpv-video-options' temporarily:
+
+  (defun find-mpv-rot90-video (fname &optional pos &rest rest)
+    \"Like `find-mpv-video', but with the extra option '--video-rotate=90'.\"
+    (interactive \"sFile name: \")
+    (let ((ee-mpv-video-options
+          (cons \"--video-rotate=90\" ee-mpv-video-options)))
+      (find-mpv-video fname pos)))
+
   
 
 
@@ -7607,8 +7692,8 @@ as soon as the download is finished.
 
 
 
-7. Downloading a local copy
-===========================
+6.1. Downloading a local copy
+-----------------------------
 Place the point at hash in the URL below,
 
   http://www.youtube.com/watch?v=abcdefghijk
@@ -7675,8 +7760,8 @@ of the video from Youtube.
 
 
 
-8. Guessing the title and extension
-===================================
+6.2. Guessing the title and extension
+-------------------------------------
 Let's simulate what would happen after the eepitch script above -
 Execute this:
 
@@ -7712,8 +7797,8 @@ components are the \"dir\", the \"title\", and the \"hash\".
 
 
 
-9. The first lines regenerate the buffer
-========================================
+6.3. The first lines regenerate the buffer
+------------------------------------------
 The arguments to `find-youtubedl-links' are:
 
   (find-youtubedl-links DIR TITLE HASH EXT- STEM)
@@ -7750,8 +7835,8 @@ TITLE and EXT- are made nil.
 
 
 
-10. Selecting a directory
-=========================
+6.4. Selecting a directory
+--------------------------
 The second block of lines in the `find-youtubedl-links' buffer
 are used to let we switch the directory quickly. If we just
 execute `M-x find-youtubedl-links' with the point on our example
@@ -7786,6 +7871,188 @@ To change the dir strings \"~/videos/\", \"~/videos/tech/\", \"/tmp/videos/\",
 \"/tmp/\", that appear in the second block of `find-youtubedl-links'
 buffers, change the variables `ee-youtubedl-dir', `ee-youtubedl-dir2',
 `ee-youtubedl-dir3', `ee-youtubedl-dir4.'
+
+
+
+
+
+7. `code-psnevideo'
+===================
+If we execute these two sexps
+
+  (code-psnevideo
+   \"punchandjudy\"
+   \"http://angg.twu.net/eev-videos/Punch_and_Judy_Mark_Poulton-K6LmZ0A1s9U.mp4\"
+   \"K6LmZ0A1s9U\")
+
+  (find-punchandjudyvideo \"1:27\")
+
+the `find-punchandjudyvideo' link will work in a way that is
+quite different from the one in the demo in section 4.3. It will
+open a temporary buffer in which the first line is a sexp - that
+calls `find-psnevideo-links' - that regenerates that buffer, and
+the second line is a low-level sexp like this, but in a single
+line,
+
+  (find-video
+   \"$S/http/angg.twu.net/eev-videos/Punch_and_Judy_Mark_Poulton-K6LmZ0A1s9U.mp4\"
+   \"1:27\")
+
+that will play the local copy of the video starting from 1:27;
+this means to to use this sexp to play the video
+
+  (find-punchandjudyvideo \"1:27\")
+
+you have to first execute it with `M-e', then type the <down> key
+to go the second line, then type `M-e' again.
+
+The last part of that buffer will either be just a message saying
+
+  # Local file found. No need to download it again.
+
+or this message here,
+
+  #  Local file not found! 
+  #  You need to run this: 
+
+followed by an eepitch block that you can you use to download the
+MP4 file, like the one here:
+
+  (find-psne-intro \"1. Local copies of files from the internet\")
+
+The middle of that buffer will have other things, like a link
+like this
+
+  http://www.youtube.com/watch?v=K6LmZ0A1s9U#t=1m27s
+
+to the video on youtube, and a call to `code-video' that will
+redefine `find-punchandjudyvideo' to make it play the video
+directly instead of creating a temporary buffer containing a link
+to play it.
+
+
+
+7.1. `code-eevvideo'
+--------------------
+`code-eevvideo' is a variant of `code-psnevideo' that lets us use
+shorter sexps. If we call this,
+
+  (code-eevvideo \"eevnav\" \"M-x-list-packages-eev-nav\")
+
+it will add \"http://angg.twu.net/eev-videos/\" and \".mp4\" to
+the string \"M-x-list-packages-eev-nav\" and then call
+`code-psnevideo'. As the third argument was omitted it will be
+set to \"{youtubeid}\". I am using `code-eevvideo' as an
+experiment: when I need to send a short screencast to someone who
+uses eev I record the video, upload it to
+http://angg.twu.net/eev-videos/ - not to youtube - and send to
+the person a pair of sexps like these:
+
+  (code-eevvideo \"eevnav\" \"M-x-list-packages-eev-nav\" \"kxBjiUo88_U\")
+  (find-eevnavvideo \"0:00\")
+
+
+
+
+7.2. `find-eevvideo-links'
+--------------------------
+It may be simpler to explain `code-eevvideo' in another order,
+starting from the function `find-eevvideo-links' - that, as its
+name suggests, is a hyperlink to a temporary buffer containing
+elisp hyperlinks (plus some parts generated by templates). A sexp
+like
+
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\")
+
+generates a temporary buffer whose first line follows the
+convention that \"the first line regenerates the buffer\", and
+its second line is a link like
+
+  (find-video \"$S/http/angg.twu.net/eev-videos/emacsconf2020.mp4\")
+
+that plays the local copy of the video (if it exists). That
+temporary buffer also contains several \"help sexps\" that point
+to parts of this intro, and also a part like
+
+  # URL, local file, and a link to the directory of the local file:
+  #               http://angg.twu.net/eev-videos/emacsconf2020.mp4
+  #              $S/http/angg.twu.net/eev-videos/emacsconf2020.mp4
+  # (find-fline \"$S/http/angg.twu.net/eev-videos/\")
+
+  # Youtube:
+  # (kill-new \"http://www.youtube.com/watch?v=hOAqBc42Gg8\")
+  #            http://www.youtube.com/watch?v=hOAqBc42Gg8
+
+that tries (!) to explain clearly how the URL and the file name
+of the local copy were generated from the argument
+\"emacsconf2020\" to `find-eevvideo-links', and how the youtube
+URL was generated by the argument \"hOAqBc42Gg8\"; and the
+temporary buffer also contains a last part with a script to
+download the .mp4 file, and a help sexp that explains that.
+
+That temporary buffer also contains a pair of sexps like
+
+  (code-video \"eev2020video\" \"$S/http/angg.twu.net/eev-videos/emacsconf2020.mp4\")
+  (find-eev2020video)
+
+that are easy to understand - the first one defines
+`find-eev2020video' as a short link to play the local copy of the
+.mp4 file.
+
+If you compare the temporary buffers generated by these two
+sexps,
+
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\")
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\" \"17:20\")
+
+you will see that the second sexp adds a time offset \"17:20\"s
+at several places, and adds a \"#t=17m20s\"s at the end of each
+youtube URL. These sexps and URLs can be used for _communication_
+- for example, if I am chatting with someone on an IRC channel I
+can say \"watch this:\", and then send these two lines:
+
+  (find-eev2020video \"17:20\")
+  http://www.youtube.com/watch?v=hOAqBc42Gg8#t=17m20s
+
+If I take the
+
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\")
+
+and change it to
+
+        (code-eevvideo \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\")
+
+this `code-eevvideo' sexps defines, or redefines,
+`find-eev2020video', to a \"version for communication\", such
+that
+
+  (find-eev2020video \"17:20\")
+
+runs 
+
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\" \"17:20\")
+
+that generates a temporary buffer with all the stuff described
+above, instead of playing the video file right away - to play the
+video file you have to execute the sexp
+
+  (find-video \"$S/http/angg.twu.net/eev-videos/emacsconf2020.mp4\" \"17:20\")
+
+in the second line of the temporary buffer.
+
+There are some examples of `find-eevvideo-links' sexps here:
+
+  (find-videos-intro \"2. Some `find-eevvideo-links'\")
+
+At this moment I don't have variants of `find-eevvideo-links' and
+`code-eevvideo' that point to other sides - see the comments
+here:
+
+  (find-eev \"eev-tlinks.el\" \"hardcoded-paths\")
+
+
+
+
 
 " pos-spec-list)))
 
@@ -9563,10 +9830,97 @@ This intro is being rewritten.
 Prerequisites:
   (find-psne-intro)
   (find-audiovideo-intro)
+  (find-audiovideo-intro \"4. Short hyperlinks to audio and video files\")
+  (find-audiovideo-intro \"7. `code-psnevideo'\")
+  (find-audiovideo-intro \"7.1. `code-eevvideo'\")
 
 
 
-1. What we have now
+
+
+1. Some videos
+==============
+At this moment I have these five videos about eev (I am
+deliberately ignoring the ones that I consider obsolete!):
+
+  \"How to record executable notes with eev - and how to play them back\":
+    http://angg.twu.net/emacsconf2019.html
+    http://angg.twu.net/emacsconf2019.html#code-video
+    http://angg.twu.net/eev-videos/emacsconf2019.mp4
+    http://www.youtube.com/watch?v=86yiRG8YJD0
+
+  \"On why most of the best features in eev look like 5-minute hacks\":
+    http://angg.twu.net/emacsconf2020.html
+    http://angg.twu.net/emacsconf2020.html#code-video
+    http://angg.twu.net/eev-videos/emacsconf2020.mp4
+    http://www.youtube.com/watch?v=hOAqBc42Gg8
+
+  \"How to install eev with M-x list-packages and how to navigate its tutorials\":
+    http://angg.twu.net/2020-list-packages-eev-nav.html
+    http://angg.twu.net/2020-list-packages-eev-nav.html#code-video
+    http://angg.twu.net/eev-videos/M-x-list-packages-eev-nav.mp4
+    http://www.youtube.com/watch?v=kxBjiUo88_U
+
+  \"Some template-based functions of eev that are not five-minute hacks\":
+    http://angg.twu.net/2020-some-template-based.html
+    http://angg.twu.net/2020-some-template-based.html#code-video
+    http://angg.twu.net/eev-videos/2020_some_template-based_functions.mp4
+    http://www.youtube.com/watch?v=91-9YfRPsuk
+
+  \"How to create hyperlinks to \"here\" with `find-here-links'\":
+    http://angg.twu.net/2020-find-here-links.html
+    http://angg.twu.net/2020-find-here-links.html#code-video
+    http://angg.twu.net/eev-videos/2020-find-here-links.mp4
+    http://www.youtube.com/watch?v=8jtiBlaDor4
+
+The ones that I prepared for the two EmacsConfs are very
+well-rehearsed, the other ones are not.
+
+The links with #code-video, like
+
+  http://angg.twu.net/emacsconf2019.html#code-video
+
+point to indexes of the videos made with sexp hyperlinks.
+
+The best way to watch them is to download local copies of their
+.mp4s and then use the short hyperlinks described in
+
+  (find-audiovideo-intro \"4. Short hyperlinks to audio and video files\")
+
+to jump to positions in them.
+
+
+
+
+2. Some `find-eevvideo-links'
+=============================
+Another way to download these videos, and to get links that play
+them from the beginning, is by using these sexps:
+
+  (find-eevvideo-links \"eev2019\" \"emacsconf2019\" \"86yiRG8YJD0\")
+  (find-eevvideo-links \"eev2020\" \"emacsconf2020\" \"hOAqBc42Gg8\")
+  (find-eevvideo-links \"eevnav\" \"2020-list-packages-eev-nav\" \"kxBjiUo88_U\")
+  (find-eevvideo-links \"2020sometbf\" \"2020-some-template-based\" \"91-9YfRPsuk\")
+  (find-eevvideo-links \"2020findherelinks\" \"2020-find-here-links\" \"8jtiBlaDor4\")
+
+The function `find-eevvideo-links' is explained here:
+
+  (find-audiovideo-intro \"7.2. `find-eevvideo-links'\")
+
+
+
+TO DO (urgent): make a video about `find-eevvideo-links' and friends,
+TO DO (not urgent): rewrite most of this intro!
+
+Everything below this point is VERY old!!!
+
+
+
+
+
+
+
+3. What we have now
 ===================
 I am producing a series of videos about eev - but at this moment
 only two very broad introductions are ready 8-(. I have plans for
@@ -9578,55 +9932,6 @@ The videos are uploaded to Youtube to make them very easy to
 find, but Youtube reduces the resolution of the original videos
 and makes them blurry and almost unreadable - so the best way to
 watch them is to fetch local copies of the high-res .mp4 files.
-
-
-
-2. Downloading local copies
-===========================
-Here are direct links to both the low-res versions at Youtube
-and to the corresponding high-res \".mp4\"s:
-
-  Eepitch: a way to control shell-like programs from Emacs
-    http://www.youtube.com/watch?v=Lj_zKC5BR64
-    http://angg.twu.net/eev-videos/video4-eepitch.mp4
-
-  An introduction to eev2 (2012nov11)
-    http://www.youtube.com/watch?v=doeyn5MOaB8
-    http://angg.twu.net/eev-videos/video2.mp4 
-
-\(The video about eepitch is shorter and far better than the
-other one - please start by it.)
-
-The ideas behind \"local copies\" are here:
-
-  (find-psne-intro)
-
-These sexps generate the download scripts in temporary buffers:
-
-  (find-eev-video-links \"eepitchvideo\" \"video4-eepitch\" \"Lj_zKC5BR64\")
-  (find-eev-video-links \"eevvideo\"     \"video2\"         \"doeyn5MOaB8\")
-
-
-
-
-3. Hyperlinks to the local copies of the videos
-===============================================
-Notice that the download scripts above contain these sexps:
-
-\(code-video \"eepitchvideo\" \"$S/http/angg.twu.net/eev-videos/video4-eepitch.mp4\")
-\(code-video \"eevvideo\"     \"$S/http/angg.twu.net/eev-videos/video2.mp4\")
-
-After you execute them hyperlinks like these should work:
-
-  (find-eepitchvideo)
-  (find-eevvideo)
-
-Note that they use mplayer to display the videos, and if you
-don't have mplayer - or if you haven't downloaded the \".mp4\"s -
-then you will get error messages in the \"*Messages*\" buffer.
-You can inspect them with `C-x b *Messages*' or with:
-
-  (find-ebuffer \"*Messages*\")
 
 
 
@@ -11100,30 +11405,6 @@ This can also be used to generate links to info nodes.
 
 (...)
 
-
-
-5.7. Refining hyperlinks
-------------------------
-(...)
-
-5.8. Pointing to anchors
-------------------------
-(...)
-
-5.9. Using a TODO file
-----------------------
-(...)
-
-5.10. Using several e-script files
-----------------------------------
-(...)
-
-5.11. Eepitch blocks in multi-line comments
--------------------------------------------
-(...)
-
-
-
 " pos-spec-list)))
 
 ;; (find-escripts-intro)
@@ -11200,10 +11481,17 @@ early draft.
 ==============
 Download the second URL below with `M-x brep',
 
-  http://peepcode.com/products/git-internals-pdf
+  https://github.com/pluralsight/git-internals-pdf/
   https://github.com/pluralsight/git-internals-pdf/releases/download/v2.0/peepcode-git.pdf
 
-and run this eepitch block,
+and do the same for the fourth URL below here:
+
+  https://git-scm.com/book/en/v2
+  https://github.com/progit/progit2
+  https://github.com/progit/progit2/releases
+  https://github.com/progit/progit2/releases/download/2.1.277/progit.pdf
+
+Then run this eepitch block,
 
  (eepitch-shell)
  (eepitch-kill)
@@ -11214,14 +11502,26 @@ and run this eepitch block,
   #    http://angg.twu.net/bin/git-defs.html
   wget http://angg.twu.net/bin/git-defs
   cp -v $S/https/github.com/pluralsight/git-internals-pdf/releases/download/v2.0/peepcode-git.pdf .
+  cp -v $S/https/github.com/progit/progit2/releases/download/2.1.277/progit.pdf .
 
 and this prog1:
 
   (prog1
     (code-pdf-page \"gitinternals\" \"/tmp/git-test/peepcode-git.pdf\")
     (code-pdf-text \"gitinternals\" \"/tmp/git-test/peepcode-git.pdf\")
+    (code-pdf-page \"progit\" \"/tmp/git-test/progit.pdf\")
+    (code-pdf-text \"progit\" \"/tmp/git-test/progit.pdf\")
     (code-c-d \"gitdoc\" \"/usr/share/doc/git-doc/\")
     )
+
+If can test if everything works by running the six sexps below:
+
+  (find-fline \"/tmp/git-test/git-defs\")
+  (find-gitinternalspage)
+  (find-gitinternalstext)
+  (find-progitpage)
+  (find-progittext)
+  (find-gitdocfile \"\")
 
 
 
@@ -12612,6 +12912,43 @@ will give you information about the current definition.
 
 
 
+
+
+;; «find-little-languages-intro»  (to ".find-little-languages-intro")
+;; Skel: (find-intro-links "little-languages")
+
+(defun find-little-languages-intro (&rest pos-spec-list) (interactive)
+  (let ((ee-buffer-name "*(find-little-languages-intro)*"))
+    (apply 'find-eintro "\
+\(Re)generate: (find-little-languages-intro)
+Source code:  (find-efunction 'find-little-languages-intro)
+More intros:  (find-eev-quick-intro)
+              (find-eev-intro)
+              (find-eepitch-intro)
+This buffer is _temporary_ and _editable_.
+It is meant as both a tutorial and a sandbox.
+
+
+
+http://angg.twu.net/emacsconf2020.html
+http://angg.twu.net/emacsconf2020.html#forth
+
+  (find-eev \"eev-blinks.el\" \"ee-goto-position\")
+  (find-eev \"eev-blinks.el\" \"ee-goto-rest\")
+  (find-multiwindow-intro)
+  (find-eev-quick-intro \"7.4. Commands with very short names\")
+
+control structures in eepitch
+
+M-7 M-e
+
+
+
+Hello
+=====
+" pos-spec-list)))
+
+;; (find-little-languages-intro)
 
 
 

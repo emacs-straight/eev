@@ -1,6 +1,6 @@
 ;;; eev-elinks.el --- `find-efunction-links' and other `find-e*-links'
 
-;; Copyright (C) 2012-2019 Free Software Foundation, Inc.
+;; Copyright (C) 2012-2021 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    2020oct11
+;; Version:    2021jan02
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-elinks.el>
@@ -77,6 +77,7 @@
 ;; «.find-color-links»		(to "find-color-links")
 ;; «.find-epackage-links»	(to "find-epackage-links")
 ;; «.ee-package-dir»		(to "ee-package-dir")
+;; «.find-esetkey-links»	(to "find-esetkey-links")
 
 ;; «.find-code-pdf-links»	(to "find-code-pdf-links")
 ;; «.find-pdf-links»		(to "find-pdf-links")
@@ -274,6 +275,8 @@ This is an internal function used by `find-efunction-links' and
     (symbol-file ',f 'defun)
     (find-fline (symbol-file ',f 'defun))
     (find-epp (assoc (symbol-file ',f 'defun) load-history))
+    (find-epp (assoc ,(symbol-file f 'defun) load-history))
+    (find-eppp (mapcar 'car load-history))
     (find-estring (mapconcat 'identity (mapcar 'car load-history) "\n"))
     (find-estring (documentation ',f))
     (find-estring (documentation ',f t))
@@ -382,6 +385,7 @@ This is an internal function used by `find-efunction-links' and
 ;; Moved to eev-mode.el:
 ;; (define-key eev-mode-map "\M-h\M-k" 'find-ekey-links)
 
+;; Test: (ee-format-kbd-macro [down])
 (defun ee-format-kbd-macro (key)
   "Example: (ee-format-kbd-macro [down])  --> \"<down>  ;; next-line\""
   (replace-regexp-in-string "[ \t][ \t]+" "  " (format-kbd-macro key t)))
@@ -805,16 +809,71 @@ when this is true remove the prefix D from FNAME, and put the sexp
 ;;;                          |___/         |_|                             
 ;;
 ;; «find-grep-links» (to ".find-grep-links")
-;; Skel: (find-find-links-links-old "\\M-g" "grep" "")
-;; Tests:
-;;   (ee-find-grep-commands)
-;;   (ee-find-grep-functions "~/eev-current/")
-;;   (ee-find-grep-links '(find-agrep find-bgrep) '("grep a *" "grep b *"))
-;;   (find-grep-links)
+;; Skel: (find-find-links-links-new "grep" "" "")
 ;;
+;; The functions `find-grep-links' and `ee-find-grep-links' are
+;; similar to `find-file-links', described here,
+;;
+;;   (find-eev-quick-intro "10.1. Generating short hyperlinks to files")
+;;
+;; in the sense that they generate short hyperlinks to the default
+;; directory and to its parent directories, but 1) they generate
+;; `find-xxxgrep' links instead of `find-xxxfile' links, and 2) they
+;; combine them with most recent elements in `grep-history'.
+;;
+;; Here's a micro-tutorial. Run `M-x grep', and complete the grep
+;; command with a string to search for and a list of files, like this,
+;;
+;;   grep --color -nH --null -e
+;;   -->
+;;   grep --color -nH --null -e Punch *.el
+;;
+;; and hit RET. You should get a buffer named "*grep*" with the
+;; results. If you type `M-h M-h' there the function `find-here-links'
+;; will run `ee-find-grep-links' to generate hyperlinks to the result
+;; of running that grep command, and one of those hyperlinks will be:
+;;
+;;   (find-eevgrep "grep --color -nH --null -e Punch *.el")
+;;
+(defun find-grep-links (&rest pos-spec-list)
+"Visit a temporary buffer containing `find-xxxgrep' sexps."
+  (interactive)
+  (apply
+   'find-elinks
+   `((find-grep-links ,@pos-spec-list)
+     ;; Convention: the first sexp always regenerates the buffer.
+     (find-efunction 'find-grep-links)
+     ""
+     ,@(ee-find-grep-links)
+     )
+   pos-spec-list))
 
-;; Moved to eev-mode.el:
-;; (define-key eev-mode-map "\M-h\M-g" 'find-grep-links)
+(defun ee-find-grep-links ()
+  "An internal function used by `find-grep-links'."
+  (ee-find-grep-links0
+   (ee-find-grep-functions default-directory)
+   (ee-find-grep-commands)))
+
+;; Low-level functions used by `ee-find-grep-links'.
+;; Tests:
+;;   (find-elinks (ee-find-grep-links))
+;;   (ee-find-grep-links)
+;;   (ee-find-grep-links0 '(find-Agrep find-Bgrep) '("grep AA *" "grep BB *"))
+;;     (ee-find-grep-functions ee-emacs-lisp-directory)
+;;     (ee-find-grep-functions ee-eev-source-directory)
+;;     (ee-find-grep-commands)
+;;
+(defun ee-find-grep-links0 (find-xxxgreps grep-commands)
+  "An internal function used by `find-grep-links'."
+  (let (result)
+    (dolist (head find-xxxgreps)
+      (dolist (command grep-commands)
+	(setq result (cons `(,head ,command) result))))
+    (nreverse result)))
+
+(defun ee-find-grep-commands ()
+  "An internal function used by `find-grep-links'."
+  (cons "grep -nH -e _ *" (ee-first-n-elements 4 grep-history)))
 
 (defun ee-first-n-elements (n list)
   "Example: (ee-first-n-elements 2 '(a b c d e f))   ==> (a b)"
@@ -826,34 +885,6 @@ when this is true remove the prefix D from FNAME, and put the sexp
   "An internal function used by `find-grep-links'."
   (ee-code-c-d-filter-2 dir '(ee-intern "find-%sgrep" c)))
 
-(defun ee-find-grep-commands ()
-  "An internal function used by `find-grep-links'."
-  (cons "grep -nH -e _ *" (ee-first-n-elements 4 grep-history)))
-
-(defun ee-find-grep-links0 (find-xxxgreps grep-commands)
-  "An internal function used by `find-grep-links'."
-  (let (result)
-    (dolist (head find-xxxgreps)
-      (dolist (command grep-commands)
-	(setq result (cons `(,head ,command) result))))
-    (nreverse result)))
-
-(defun ee-find-grep-links ()
-  (ee-find-grep-links0
-   (ee-find-grep-functions default-directory)
-   (ee-find-grep-commands)))
-
-(defun find-grep-links (&rest pos-spec-list)
-"Visit a temporary buffer containing `find-xxxgrep' sexps."
-  (interactive)
-  (apply 'find-elinks
-   `((find-grep-links ,@pos-spec-list)
-     ;; Convention: the first sexp always regenerates the buffer.
-     (find-efunction 'find-grep-links)
-     ""
-     ,@(ee-find-grep-links)
-     )
-   pos-spec-list))
 
 
 
@@ -1022,23 +1053,20 @@ See the comments in the source code."
 ;;; |  _| | | | | (_| |_____|  __/  _| (_| | (_|  __/_____| | | | | |   <\__ \
 ;;; |_| |_|_| |_|\__,_|      \___|_|  \__,_|\___\___|     |_|_|_| |_|_|\_\___/
 ;;;                                                                           
-;; See: (find-links-intro)
-;;      (find-templates-intro)
-
 ;; «find-eface-links» (to ".find-eface-links")
-;; Skel: (find-find-links-links-old "\\M-s" "eface" "face-symbol")
-;; A test: (find-eface-links 'bold)
-
+;; Skel: (find-find-links-links-new "eface" "face-symbol" "")
+;; Test: (find-eface-links 'eepitch-star-face)
 ;; Moved to eev-mode.el:
-;; (define-key eev-mode-map "\M-h\M-s" 'find-eface-links)
-
-(defun find-eface-links (face-symbol &rest pos-spec-list)
-"Visit a temporary buffer containing hyperlinks about FACE-SYMBOL."
+;;   (define-key eev-mode-map "\M-h\M-s" 'find-eface-links)
+;;
+(defun find-eface-links (&optional face-symbol &rest pos-spec-list)
+"Visit a temporary buffer containing hyperlinks about FACE-SYMBOL.
+When called interactively generate hyperlinks about the face at point."
   (interactive (list (or (face-at-point) 'default)))
-  ;; (setq face-symbol (or face-symbol "{face-symbol}"))
-  ;; (setq face-symbol (or face-symbol (face-at-point)))
-  (apply 'find-elinks
-   `((find-eface-links ',face-symbol ,@pos-spec-list)
+  (setq face-symbol (or face-symbol "{face-symbol}"))
+  (apply
+   'find-elinks
+   `((find-eface-links ,face-symbol ,@pos-spec-list)
      ;; Convention: the first sexp always regenerates the buffer.
      (find-efunction 'find-eface-links)
      ""
@@ -1056,9 +1084,6 @@ See the comments in the source code."
      )
    pos-spec-list))
 
-;; Test: (find-eface-links 'eepitch-star-face)
-;; (find-eevfile "eev.el" "\\M-h\\M-s")
-
 
 
 
@@ -1069,21 +1094,19 @@ See the comments in the source code."
 ;;; |_| |_|_| |_|\__,_|     \___|\___\___/|_|\___/|_|      |_|_|_| |_|_|\_\___/
 ;;;                                                                              
 ;; «find-color-links» (to ".find-color-links")
-;; Skel: (find-find-links-links-old "c" "color" "initialcolor")
-;; Tests:
-;;   (find-ecolor-links)
-;;   (find-ecolor-links "sienna")
+;; Skel: (find-find-links-links-new "color" "initialcolor" "")
+;; Tests: (find-ecolor-links)
+;;        (find-ecolor-links "sienna")
 ;;
-
-;; Moved to eev-mode.el:
-;; (define-key eev-mode-map "\M-hc" 'find-ecolor-links)
-
-(defun find-ecolor-links (&optional initialcolor &rest pos-spec-list)
+(defun find-color-links (&optional initialcolor &rest pos-spec-list)
   "Visit a temporary buffer containing hyperlinks for the color INITIALCOLOR."
   (interactive)
   (setq initialcolor (or initialcolor "#123456"))
-  (apply 'find-elinks
-   `((find-ecolor-links ,initialcolor ,@pos-spec-list)
+  (apply
+   'find-elinks
+   `((find-color-links ,initialcolor ,@pos-spec-list)
+     ;; Convention: the first sexp always regenerates the buffer.
+     (find-efunction 'find-color-links)
      ""
      (find-ecolor-links (ee-color-choose-tk ,(or initialcolor "gray")))
      (find-ecolor-links ,(or initialcolor "gray"))
@@ -1093,7 +1116,6 @@ See the comments in the source code."
      ,`(ee-color-values ,initialcolor)
      (kill-new ,initialcolor)
      (kill-new ,(ee-color-values initialcolor))
-     (find-efunction 'find-ecolor-links)
      )
    pos-spec-list))
 
@@ -1102,6 +1124,14 @@ See the comments in the source code."
   (apply 'format "#%02x%02x%02x"
 	 (mapcar (lambda (c) (lsh c -8)) (color-values color))))
 
+;; `ee-color-choose-tk' is a VERY OLD hack that needs eetcl... see:
+;; http://angg.twu.net/eev-current/eev-langs.el.html
+;; http://angg.twu.net/eev-current/eev-langs.el
+;;   (find-sh0     "echo $EEVTMPDIR")
+;;   (find-fline        "$EEVTMPDIR")
+;;   (find-sh0 "mkdir -p $EEVTMPDIR")
+;;   (require 'eev-langs)
+;;
 (defun ee-color-choose-tk (&optional initialcolor)
   "Call Tcl/Tk to choose a color similar to INITIALCOLOR.
 This needs a temporary directory; see: (find-prepared-intro)"
@@ -1241,6 +1271,75 @@ Convert PKG - a symbol - to a package-desc structure (or to nil)."
 
 
 
+
+;;;   __ _           _                      _   _              
+;;;  / _(_)_ __   __| |       ___  ___  ___| |_| | _____ _   _ 
+;;; | |_| | '_ \ / _` |_____ / _ \/ __|/ _ \ __| |/ / _ \ | | |
+;;; |  _| | | | | (_| |_____|  __/\__ \  __/ |_|   <  __/ |_| |
+;;; |_| |_|_| |_|\__,_|      \___||___/\___|\__|_|\_\___|\__, |
+;;;                                                      |___/ 
+;;
+;; «find-esetkey-links»  (to ".find-esetkey-links")
+;; Skel: (find-find-links-links-new "esetkey" "key command" "longkey")
+;; Test: (find-esetkey-links (kbd "M-o") 'other-window)
+;;
+(defun find-esetkey-links (&optional key command &rest pos-spec-list)
+  "Visit a temporary buffer containing sexps for setting a key."
+  (interactive
+   (let* ((menu-prompting nil)
+          (key (read-key-sequence "Set key: " nil t))
+	  (longkey (format-kbd-macro key))
+	  (command (ee-read-command)))
+     (list key command)))
+  (setq key (or key (kbd "M-o")))
+  (setq command (or command 'other-window))
+  (let* ((longkey (format-kbd-macro key)))
+    (apply
+     'find-elinks-elisp
+     `((find-esetkey-links (kbd ,longkey) ',command ,@pos-spec-list)
+       (find-esetkey-links (kbd "M-o") 'other-window ,@pos-spec-list)
+       ;; Convention: the first sexp always regenerates the buffer.
+       (find-ekeydescr (kbd ,longkey))
+       (find-efunctiondescr ',command)
+       (find-efunction 'find-esetkey-links)
+       ""
+       (find-enode "Rebinding" "M-x global-set-key")
+       (find-elnode "Changing Key Bindings" "Function: define-key")
+       (find-efunctiondescr 'global-set-key)
+       (find-efunctiondescr 'global-unset-key)
+       (find-efunctiondescr 'local-set-key)
+       (find-efunctiondescr 'local-unset-key)
+       (find-efunctiondescr 'define-key)
+       (find-efunctiondescr 'kbd)
+       (find-enode "Misc Help" "describe-bindings")
+       (eek "C-h b  ;; describe-bindings")
+       ""
+       ,(ee-template0 "\
+(global-set-key   (kbd \"{longkey}\") '{command})
+(global-unset-key (kbd \"{longkey}\"))
+
+(local-set-key    (kbd \"{longkey}\") '{command})
+(local-unset-key  (kbd \"{longkey}\"))
+
+;; (find-ekeymapdescr eev-mode-map)
+(define-key eev-mode-map (kbd \"{longkey}\") '{command})
+(define-key eev-mode-map (kbd \"{longkey}\") nil)
+")
+       )
+     pos-spec-list)))
+
+(defun ee-read-command ()
+  "An internal function used by `find-esetkey-links'."
+  (let* ((cmd-at-pt (ee-command-at-point))
+	 (prompt (if cmd-at-pt
+		     (format "Command (default %s): " cmd-at-pt)
+		   "Command: ")))
+    (read-command prompt cmd-at-pt)))
+
+(defun ee-command-at-point ()
+  "An internal function used by `find-esetkey-links'."
+  (let ((symbol (symbol-at-point)))
+    (if (commandp symbol) symbol)))
 
 
 
