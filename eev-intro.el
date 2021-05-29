@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20210512
+;; Version:    20210529
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-intro.el>
@@ -2810,6 +2810,11 @@ what you do, in a format that is reasonably readable and that is
 easy to \"play back\" later, step by step and in any order. We
 call these executable logs, or executable notes, \"e-scripts\".
 
+[Video links:]
+  (find-eev2019video \"5:41\" \"e-scripts\")
+  (find-eev2019video \"12:54\" \"A demo\")
+
+
 
 
 
@@ -2921,6 +2926,12 @@ back\" from that buffer with `M-k' of `M-K':
   (find-eval-intro \"5. Going back\")
 
 
+[Video links:]
+  (find-eev2020video \"2:25\" \"variants that were better behaved\")
+  (find-eev2020video \"2:36\" \"in the same window as before\")
+
+
+
 
 
 3. `find-here-links'
@@ -2976,6 +2987,7 @@ and puts the cursor at the elinks buffer.
 
 
 
+
 5. `find-here-links-1'
 ======================
 After creating the three windows described above we will usually
@@ -3007,6 +3019,7 @@ Note that `M-h M-1' undoes what `M-h M-3' did. In a figure:
 
 
 [Video links:]
+  (find-eevfherelvideo \"4:40\" \"2. The beginner's way\")
   (find-eevfherelvideo \"4:40\" \"2.1. The 3-window setting - and going back from it\")
   (find-eevfherelvideo \"6:47\"  \"`M-h M-3': three windows; `M-h M-1' goes back\")
   (find-eevfherelvideo \"7:29\"  \"the original configuration can be anything\")
@@ -6633,7 +6646,7 @@ the page whose page number is 3 is the page whose page label is
   (find-livesofanimalspage 3)
 
 are equivalent, but the first one is more human-friendly: the 113
-is a page label, and the -110 is adjustment (we call it the
+is a page label, and the -110 is an adjustment (we call it the
 \"offset\") to convert the 113 that humans prefer to see into
 the 3 that xpdf needs to receive.
 
@@ -7610,8 +7623,7 @@ the URL to the end of a log file. So \"p-sn-e\".
 Source code:  (find-eev \"eev-intro.el\" \"find-audiovideo-intro\")
 More intros:  (find-eev-quick-intro)
               (find-eev-intro)
-              (find-eval-intro)
-              (find-eepitch-intro)
+              (find-videos-intro)
 This buffer is _temporary_ and _editable_.
 It is meant as both a tutorial and a sandbox.
 
@@ -8902,8 +8914,13 @@ support for rcirc (and no support for ERC).
 
 The eev support for rcirc consists mainly of three high-level
 functions that connect to Freenode (the IRC server where most
-discussion of free software projects happen), called
-`find-freenode', `find-freenode-2a' and `find-freenode-3a'.
+discussion of free software projects USED TO happen), and three
+high-level functions that connect to LiberaChat (the IRC server
+where most discussion of free software projects were moved to).
+These functions are called:
+
+  `find-freenode', `find-freenode-2a' and `find-freenode-3a',
+  `find-libera', `find-libera-2a' and `find-libera-3a'.
 
 For a good explanation of what IRC is, see:
 
@@ -8917,21 +8934,21 @@ For a good explanation of what IRC is, see:
 Let's start with an example. In
 
   (setq rcirc-default-nick \"hakuryo\")
-  (setq ee-freenode-ichannels \"#eev\")
-  (find-freenode-3a \"#eev\")
+  (setq ee-libera-ichannels \"#eev\")
+  (find-libera-3a \"#eev\")
 
 the first sexp tells rcirc to use the nickname \"hakuryo\" when
 connecting to an IRC server; the second sets the set of \"initial
-channels\" on Freenode to just one channel, #eev - a channel that
-is usually empty, but that doesn't require authentication; the
-third sexp is a \"sexp hyperlink to the Freenode channel #eev\".
-The third sexp:
+channels\" on LiberaChat to just one channel, #eev - a channel
+that is usually empty, but that doesn't require authentication;
+the third sexp is a \"sexp hyperlink to the LiberaChat channel
+#eev\". The third sexp:
 
   1) creates a window setting like this,
 
        _________________________
       |           |             |
-      |           |   Freenode  |
+      |           |  LiberaChat |
       |           |    server   |
       |           |   messages  |
       |  current  |_____________|    
@@ -8941,7 +8958,7 @@ The third sexp:
       |           |             |
       |___________|_____________|
 
-  2) tells rcirc to connect to Freenode and to the channel #eev
+  2) tells rcirc to connect to LiberaChat and to the channel #eev
      in it,
 
   3) makes the window at the left - window \"A\" in the
@@ -8967,7 +8984,7 @@ the other users in #eev, and to experiment with commands. See:
 =========================
 Try this:
 
-  (find-freenode-2a \"#eev\")
+  (find-libera-2a \"#eev\")
 
 It creates a window setting like
 
@@ -9003,6 +9020,10 @@ and how to use it as a one-window setting. Also:
 
   (global-set-key [f2] 'rcirc-next-active-buffer)
 
+  (find-eev \"eev-elinks.el\" \"find-esetkey-links\")
+  (find-eev \"eev-elinks.el\" \"find-esetkey-links\" \"video\")
+  (find-esetkey-links (kbd \"<f2>\") 'rcirc-next-active-buffer)
+
 
 
 
@@ -9018,39 +9039,39 @@ to rcirc. If you connect occasionally to the channels #eev,
 your .emacs:
 
   (setq rcirc-default-nick \"hakuryo\")
-  (defun e2 () (interactive) (find-freenode-2a \"#eev\"))
-  (defun e3 () (interactive) (find-freenode-3a \"#eev\"))
-  (defun m2 () (interactive) (find-freenode-2a \"#emacs\"))
-  (defun m3 () (interactive) (find-freenode-3a \"#emacs\"))
-  (defun g2 () (interactive) (find-freenode-2a \"#git\"))
-  (defun g3 () (interactive) (find-freenode-3a \"#git\"))
-  (defun r2 () (interactive) (find-freenode-2a \"#ruby\"))
-  (defun r3 () (interactive) (find-freenode-3a \"#ruby\"))
+  (defun e2 () (interactive) (find-libera-2a \"#eev\"))
+  (defun e3 () (interactive) (find-libera-3a \"#eev\"))
+  (defun m2 () (interactive) (find-libera-2a \"#emacs\"))
+  (defun m3 () (interactive) (find-libera-3a \"#emacs\"))
+  (defun g2 () (interactive) (find-libera-2a \"#git\"))
+  (defun g3 () (interactive) (find-libera-3a \"#git\"))
+  (defun r2 () (interactive) (find-libera-2a \"#ruby\"))
+  (defun r3 () (interactive) (find-libera-3a \"#ruby\"))
 
 
 
 
-5. `find-freenode-links'
+5. `find-libera-links'
 ========================
 You can generate lines like the ones above by running
-`find-freenode-links'. For example:
+`find-libera-links'. For example:
 
-  (find-freenode-links \"e\" \"#eev\")
-  (find-freenode-links \"r\" \"#ruby\")
+  (find-libera-links \"e\" \"#eev\")
+  (find-libera-links \"r\" \"#ruby\")
 
 
 
 6. Other servers
 ================
 TODO: explain how to use find-rcirc-buffer and how to adapt
-find-freenode-* to other servers. Example:
+find-libera-* to other servers. Example:
 
   (find-rcirc-buffer-2a \"irc.debian.org\" \"#debian-live\" nil \"#debian-live\")
   (find-rcirc-buffer-3a \"irc.debian.org\" \"#debian-live\" nil \"#debian-live\")
 
 See:
 
-  (find-eev \"eev-rcirc.el\" \"find-freenode\")
+  (find-eev \"eev-rcirc.el\" \"find-libera\")
 
 " pos-spec-list)))
 
@@ -9796,10 +9817,16 @@ and then:
 
 Here is the demo. Run it with <F8>s:
 
-
  (find-3EE '(eepitch-shell) '(eepitch-shell2))
+ (find-3ee '(eepitch-shell) '(eepitch-shell2))
+ (eepitch-shell)
+# Optional clean-up:
+ls -lAF $EEVTMPDIR/eeg.A.*
+rm -fv  $EEVTMPDIR/eeg.A.*
+
  (eepitch-shell2)
-$EEVDIR/eegchannel A python
+# Start a python interpreter \"listening on channel A\":
+$EEVDIR/eegchannel A python3
 
  (eepitch-shell)
 # Check that eeg.A.pid exists and is very recent:
@@ -13163,9 +13190,17 @@ The functions in the `code-c-d' family produce code that is first
 
 8. `let' and `let*'
 ===================
+See:
 
   (find-elnode \"Local Variables\" \"Special Form: let \")
   (find-elnode \"Local Variables\" \"Special Form: let* \")
+
+Try:
+
+  (setq y 2)
+  (let  ((y 1) (z y)) (list y z))
+  (let* ((y 1) (z y)) (list y z))
+
 
 
 
