@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20210529
+;; Version:    20210813
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-intro.el>
@@ -13500,59 +13500,221 @@ See:
 
 
 
-0. `ee-eval-lexical'
-====================
-See: (find-eev \"eev-eval.el\" \"ee-eval-last-sexp\")
-     (find-eev \"eev-eval.el\" \"ee-eval-last-sexp\" \"11:\")
-     (find-eev \"eev-eval.el\" \"tools\")
-     (find-eev \"eev-eval.el\" \"tools\" \"ee-eval-lexical\")
-     (find-efunctiondescr 'eval)
 
-Try to evaluate this sexp with `M-e' and with `M-1 M-1 M-e':
+0. How to use this
+==================
+Usually people select between lexical binding and dynamic binding
+by putting their functions that use lexical binding in files with
+a \"-*- lexical-binding:t -*-\" in their first line, like this:
 
-  (let ((x 42))
-    (defun foo () (* x x))
-    (symbol-function 'foo))
+  (find-efile \"play/tetris.el\" \"lexical-binding:t\")
 
+See:
 
+  (find-elnode \"Using Lexical Binding\")
+  (find-elnode \"Using Lexical Binding\" \"first line\")
 
+Here we will do something much more low-level. `(eval CODE)'
+and `(eval CODE nil)' both eval CODE using dynamic binding,
+but `(eval CODE t)' and `(eval CODE 'lexical)' eval CODE using
+lexical binding. In dynamic binding all `defun's generate
+lambdas, but in lexical binding some `defun's generate closures.
+You can test this by running the four sexps below with `M-e' -
+the `(eval ... 'lexical)' stores a closure in the function cell
+of `foo':
 
-1. Creating closures
-====================
-Long form:
-
-  (eval '(let ((x 42)) (defun foo () (* x x))) 'lexical)
   (eval '(let ((x 42)) (defun foo () (* x x))) nil)
   (symbol-function 'foo)
 
-Short form:
+  (eval '(let ((x 42)) (defun foo () (* x x))) 'lexical)
+  (symbol-function 'foo)
+
+We will also use another technique, based on `M-e', for making
+code eval-able in both dynamic binding mode and lexical binding
+mode.
+
+Let me list some facts...
+
+  1) dynamic binding is still the current default, but it is
+     being phased out and may be declared obsolete in a few years
+     - AND EVEN KILLED COMPLETELY, despite the complaints of the
+     many people who love it, like me;
+
+  2) `M-e' goes to the end of the line, reads the sexp before
+     point, and `eval's it;
+
+  3) `M-e' _sort of_ emulates `C-e C-x C-e', but `C-x C-e'
+     doesn't run a plain `eval' - it runs a function based on
+     `eval' that has lots of bells and whistles, and that is too
+     complex for my tiny brain. Take a look at its code:
+
+        (eek \"M-h M-k  C-x C-e  ;; eval-last-sexp\")
+        (find-efunctiondescr 'eval-last-sexp)
+        (find-efunction      'eval-last-sexp)
+
+  4) `C-x C-e' uses the buffer-local variable `lexical-binding'
+     to decide whether it should use dynamic or lexical binding,
+     while `M-e' does not. Try to eval the sexps below with a
+     series or `C-e C-x C-e's:
+
+       (setq-local lexical-binding t)
+       (let ((x 42)) (defun foo () (* x x)))
+       (symbol-function 'foo)
+
+       (setq-local lexical-binding nil)
+       (let ((x 42)) (defun foo () (* x x)))
+       (symbol-function 'foo)
+
+     You will see that the first block generates a closure and
+     the second does not. If you try to execute those six sexps
+     with `M-e's you'll get lambdas in both blocks.
+
+  5) I chose to use a simple `eval' without the second argument
+     in the plain `M-e' because: a) it is simpler to understand,
+     b) it is simpler to explain to beginners, and b) people can
+     change it by redefining this function:
+
+       (find-eev \"eev-eval.el\" \"arg-variants\" \"ee-eval-last-sexp-default\")
+
+  6) `M-e' supports numeric prefixes that select alternate
+     actions - for example, `M-0 M-e' highlights the sexp instead
+     of executing it - and it's easy to add new alternate
+     actions. See:
+
+       (find-eev \"eev-eval.el\" \"ee-eval-last-sexp\")
+       (find-eev \"eev-eval.el\" \"arg-variants\")
+
+  7) `M-1 M-1 M-e' (or: `M-11e') uses `(eval ... 'lexical)'
+     instead of the plain `eval'. See:
+
+       (find-efunction 'ee-eval-last-sexp-default)
+       (find-efunction 'ee-eval-last-sexp-11)
+       (find-efunction 'ee-eval-lexical)
+
+     Try to execute the 4-line sexp below with both `M-e' and
+     `M-11e':
+
+        (let ((x 42))
+          (defun foo () (* x x))
+          (symbol-function 'foo)
+          )
+
+In the rest of this tutorial I will suppose that the reader knows
+how to use `M-e' to eval sexps in the \"old\" dynamic binding
+mode and `M-11e' to eval sexps in new lexical binding mode, and
+knows how to run code blocks in BOTH dynamic and lexical binding
+modes to compare the results.
+
+
+
+(The rest of this tutorial is just a first draft)
+
+
+
+
+1. `lambda' and `function'
+==========================
+See: (find-elnode \"Anonymous Functions\" \"Macro: lambda\")
+     (find-elnode \"Anonymous Functions\" \"Special Form: function\")
+     (find-elnode \"Anonymous Functions\" \"Special Form: function\" \"converted\")
 
   (let ((x 42))
-    (defun foo () (* x x))
-    (symbol-function 'foo))
-
-Even shorter:
+    (lambda () x)
+    )
 
   (let ((x 42))
-    (function (lambda foo () (* x x))))
+    (function 
+      (lambda () x)
+      )
+    )
 
 
 
-
-2. `letxgetx'
-=============
+2. How closures work
+====================
 See: (find-elnode \"Dynamic Binding\" \"defun getx\")
      (find-elnode \"Lexical Binding\" \"defun getx\")
      (find-elnode \"Void Variables\")
 
-  (makunbound   'x)
-  (defun getx () x)
-                                             (getx)
-                                (let ((x 1)) (getx))
-             (defun letxgetx () (let ((x 1)) (getx)))
-                   (letxgetx)
-  (symbol-function 'letxgetx)
-  
+  (let ((x 20))
+    (defun getx () x)
+    )
+
+  (makunbound 'x)
+  (setq x 99)
+  (getx)
+  (let ((x 42)) (getx))
+ 
+
+
+
+3. `get/set'
+============
+;; These fsets work as defuns.
+;; See: (find-elnode \"Function Cells\")
+
+(fset 'foo (lambda () 20))
+(fset 'foo (lambda () 42))
+(foo)
+
+;; This is the only sexp in this block that needs
+;; to be run in lexical binding mode.
+;;
+(defun get/set0 ()
+  \"Return a list with a `getter' closure and a `setter' closure.
+The getter and the setter share the same lexical environment -
+which means that they operate on the same `x'.
+Different calls to this function generate getters and setters
+with independent lexical environments - which means that they
+operate on independent `x's.
+This defun need to be executed in lexical binding mode.\"
+  (let* ((x nil))
+    (list (lambda () x)
+          (lambda (newvalue) (setq x newvalue)))))
+
+(defun get/set (getter setter)
+  \"Define a SETTER and a GETTER that operate on the same variable.
+SETTER and GETTER are symbols: names of functions. The variable
+lives in a lexical environment that is shared by both the GETTER
+and the SETTER. Each call to this function generates a different
+lexical environment.\"
+  (let ((gs (get/set0)))
+    (fset getter (nth 0 gs))
+    (fset setter (nth 1 gs))))
+
+;; Check that geta/seta and getb/setb operate on different
+;; variables:
+;;
+(get/set 'geta 'seta)
+(get/set 'getb 'setb)
+(symbol-function 'geta)
+(symbol-function 'getb)
+(symbol-function 'seta)
+(symbol-function 'setb)
+(seta 20)
+(setb 42)
+(geta)
+(getb)
+
+
+;; Check that geta/seta use the same lexical environment
+;; and that getb/setb use a second lexical environment.
+;; See: (find-elnode \"Closures\")
+
+          (symbol-function 'seta)
+     (cdr (symbol-function 'seta))
+(car (cdr (symbol-function 'seta)))
+
+(eq
+  (cadr (symbol-function 'geta))
+  (cadr (symbol-function 'seta))
+  )
+
+(eq
+  (cadr (symbol-function 'getb))
+  (cadr (symbol-function 'setb))
+  )
+
 
 
 " pos-spec-list)))
