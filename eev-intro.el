@@ -1,4 +1,4 @@
-;;; eev-intro.el --- sandboxed tutorials for eev, like (find-eev-quick-intro)
+;;; eev-intro.el --- sandboxed tutorials for eev, like (find-eev-quick-intro)  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2013-2021 Free Software Foundation, Inc.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20210817
+;; Version:    20211009
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-intro.el>
@@ -989,6 +989,13 @@ character 15 corresponds to control-O, whose default
 representation on screen would be \"^O\". You can enter a
 literal ^O in a buffer by typing `C-q C-o'.
 
+It is possible to make other characters play the role of the red
+star, but to make that work you need to know a bit of Lisp. See:
+
+  (find-eepitch-bullet-links)
+  (find-eev \"eev-tlinks.el\" \"find-eepitch-bullet-links\")
+
+
 
 
 
@@ -1629,7 +1636,7 @@ executing the eepitch block below with <f8>s,
  (eepitch-kill)
  (eepitch-shell)
   cd
-  wget -nc https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+  wget -nc https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 then these sexps will be hyperlinks to a page of a PDF, and to
 some string in it...
@@ -1985,6 +1992,7 @@ C-x 1   -- delete-other-windows     (\"1 window\") (find-enode \"Change Window\"
 C-x 2   -- split-window-vertically (Above/Below) (find-enode \"Split Window\")
 C-x 3   -- split-window-horizontally       (L|R) (find-enode \"Split Window\")
 C-x 4 0 -- kill-buffer-and-window                (find-enode \"Change Window\")
+C-x +   -- balance-windows                       (find-enode \"Change Window\")
 
 
 
@@ -2208,11 +2216,12 @@ These are the current ways to download and install eev:
 
   2. as an Emacs package, by downloading a file named
      eev-YYYYMMDD.tar from either ELPA or angg.twu.net using
-     links like these ones,
+     links like these ones - but you'll have to correct the date:
 
        http://elpa.gnu.org/packages/eev.html
        http://elpa.gnu.org/packages/eev-20201013.tar
        http://angg.twu.net/eev-current/
+       http://angg.twu.net/eev-current/eev2.tar
        http://angg.twu.net/eev-current/eev-20201013.tar
 
      and then running `M-x package-install-file';
@@ -2356,6 +2365,47 @@ work... I still need to understand this. See:
 If you have installed both an eev from ELPA and an eev from the
 .tgz or from the git repo then one of them will be found first in
 the load-path. Check which one!
+
+
+
+
+5.4. `package-install-file'
+---------------------------
+If installing the latest version of eev from ELPA with `M-x
+list-packages' doesn't work you can download the latest version
+of eev as a .tar file directly from its ELPA page - here:
+
+  http://elpa.gnu.org/packages/eev.html
+
+and then run `M-x package-install-file' and give it the name of
+the local copy of the .tar. See:
+
+  (find-enode \"Package Files\" \"M-x package-install-file\")
+
+
+
+
+5.5. `use-package'
+------------------
+Some people use non-default package managers for Emacs, like
+straight.el and use-package. I have very little experience with
+them, but it SEEMS that this is a good recipe for using eev with
+`use-package':
+
+;; From:
+;; https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00031.html
+;; https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00034.html
+;; See: (find-eev-install-intro \"5.5. `use-package'\")
+;;
+(use-package eev
+  :straight (:host github :repo \"edrx/eev\")
+  :config (progn
+           ;; See: (find-eev \"eev-load.el\" \"autoloads\")
+           ;; http://angg.twu.net/eev-current/eev-load.el.html#autoloads
+           (require 'eev-load)
+           ;; (eev-mode 1)     ; optional
+           ;; (eev-beginner)   ; optional
+           ))
 
 
 
@@ -2515,9 +2565,17 @@ Dependency on dynamic binding should be avoided - see:
 
 but the main function that eev uses for template strings is
 intrinsically incompatible with lexical binding. See the comments
-in its source file:
+in its source file,
 
   (find-eev \"eev-template0.el\")
+
+and this tutorial:
+
+  (find-lexical-intro)
+
+I decided to make all the elisp files in eev use dynamic binding
+for simplicity, even though this is frowned upon.
+
 
 
 
@@ -6509,7 +6567,7 @@ examples. If you run this e-script
  (eepitch-kill)
  (eepitch-shell)
   cd
-  wget -nc https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+  wget -nc https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 you will download a local copy of J.M. Coetzee's \"The Lives of
 Animals\" into your home directory. To check that the PDF has been
@@ -6522,12 +6580,12 @@ downloaded, use:
 Eev also implements another way, called \"psne\", to download
 local copies of files from the internet.\"Psne-ing\" a URL like
 
-  https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+  https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 downloads it to a local file with a name like:
 
-       $S/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
-  ~/snarf/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+       $S/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
+  ~/snarf/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 that is _much_ longer that just \"~/Coetzee99.pdf\"; this has the
 advantage of preserving more information about the URL from which
@@ -7104,8 +7162,8 @@ If we download a local copy of a PDF, like we did here,
 
   (find-pdf-like-intro \"2. Preparation\")
 
-      https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
-  -> $S/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+      https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
+  -> $S/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 then it makes sense to have a `brxxx'-function, called `brpdfl',
 that we can run on the \"https://\" URL above, and that will open
@@ -7368,8 +7426,8 @@ file from the internet... here we will discuss the second way, in
 which the conversion from URL to a local file name works like
 this:
 
-      https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
-  -> $S/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+      https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
+  -> $S/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 
 
@@ -7533,8 +7591,8 @@ The details on how to create these \"brxxx functions\" are here:
 ======================
 Converting a \"non-psne URL\" to a \"psne URL\" by hand, like this,
 
-      https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
-  -> $S/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+      https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
+  -> $S/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
 
 is error-prone and boring.
 
@@ -7551,8 +7609,8 @@ because most people prefer to use the key `M-s' for their other
 things. Then try it by putting the cursor here and typing `M-s' four
 times. Watch the four psne-nesses below flip.
 
-   https://tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
-  $S/https/tannerlectures.utah.edu/_documents/a-to-z/c/Coetzee99.pdf
+   https://tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
+  $S/https/tannerlectures.utah.edu/_resources/documents/a-to-z/c/Coetzee99.pdf
    http://www.gnu.org/software/emacs/emacs-paper.html
   $S/http/www.gnu.org/software/emacs/emacs-paper.html
 
@@ -11937,6 +11995,193 @@ This can also be used to generate links to info nodes.
 
 (...)
 
+
+
+
+6. Tutorials
+============
+All the tutorials in eev follow these four principles:
+
+  1. All the examples in them are very easy to run,
+  2. The links to documentation are easy to follow,
+  3. All the \"sub-examples\" are easy to run,
+  4. The links to related documentation - including links to
+     primary sources - are easy to follow.
+
+I used to believe that all these four principles would be
+immediately obvious to everyone who had played a bit with the
+tutorials of eev, and I thought that people would realize that
+these are very good principles, that they should follow too...
+and so these people would start to apply these principles to
+their own e-scripts, and they would adapt them to other
+environments that are not Emacs-based, and these ideas would
+spread (sort of) naturally. Well, I was totally wrong - and I
+only discovered that in 2021, when I chatted with some relatively
+advanced eev users to whom those ideas were not obvious at all.
+So let me try to be explain these principles clearly - especially
+the principles 3 and 4 - and show how they can be applied to
+other contexts besides tutorials.
+
+The idea of \"making sub-examples very easy to run\" is
+especially easy to see in the elisp tutorials. In this
+introduction
+
+  (find-elisp-intro \"1. Introduction\")
+
+we have first this sexp,
+
+     (+ (* 2 3) (* 4 5))
+
+and then these ones:
+
+           2
+             3
+        (* 2 3)
+                   4
+                     5
+                (* 4 5)
+     (+ (* 2 3) (* 4 5))
+  (list (* 2 3) (* 4 5))
+
+In the first sexp people _could_ execute the subsexps (* 2 3)
+and (* 4 5) by typing `M-E' in the right places... remember:
+
+  (find-eval-intro \"2. The end of line and `M-e'\")
+  (find-eval-intro \"2. The end of line and `M-e'\" \"without moving\")
+
+...but it is much easier to see the sub-sexps, and to execute
+them, when they are in different lines. This example also serves
+to stress to beginners than number, like 4, are sexps too, and
+they can be evaluated - the result of evaluating 4 is 4.
+
+In a sequence of sub-sexps, like the one above, I usually try to
+arrange the sexps in a didactic order: to understand the result
+of (+ (* 2 3) (* 4 5)) we need to understand first the results
+of (* 2 3) and (* 4 5). Also, the best way to understand the new
+idea that appears in
+
+  (list (* 2 3) (* 4 5))
+
+is to compare it with this other sexp, that appears just before
+it and is conceptually simpler:
+
+     (+ (* 2 3) (* 4 5))
+
+I try to apply this principle - \"make sub-examples very easy to
+run\" - to tutorials for other languages, too. At this moment the
+only tutorial for another language that I have that is in a
+_reasonably_ organized form is this one,
+
+               http://angg.twu.net/e/lua-intro.e.html
+  (find-wgeta \"http://angg.twu.net/e/lua-intro.e\")
+  (find-wgeta \"http://angg.twu.net/e/lua-intro.e\" \"intro:for\")
+
+but parts of it were written in 2004, when these principles were
+not yet very clear to me. I am revising it, and I am also trying
+to convince some students to work together with me on tutorials
+for shell and Python, but they are not very enthusiastic (yet).
+
+The \"links to related documentation\" can also be arranged in a
+didactical order. For example, here,
+
+  (find-eev-quick-intro \"6.4. Red stars\")
+  (find-eev-quick-intro \"6.4. Red stars\" \"bullet\")
+  (find-eepitch-bullet-links)
+
+the first link points to a section of a tutorial that most people
+should have stumbled on; the second link points to technical a
+point in it that most people ignore on a first reading, and the
+third one points to something much more technical,
+containing (executable!) source code.
+
+(TO DO: mention test blocks)
+
+
+
+7. Sequences of links
+=====================
+(TO DO: explain the convention: from easiest to find to more
+technical. Explain the big example below.)
+
+  (find-eev-quick-intro \"2. Evaluating Lisp\")
+  (find-eev-quick-intro \"2. Evaluating Lisp\" \"M-0 M-e\")
+  (find-eev-quick-intro \"4.2. `find-ekey-links' and friends\")
+       (eek \"M-h M-k  M-e\")
+       (eek \"M-h M-k  M-e  ;; ee-eval-sexp-eol\")
+  (find-eek \"M-h M-k  M-e  ;; ee-eval-sexp-eol\")
+  (find-eek \"M-h M-k  M-e  ;; ee-eval-sexp-eol\" \"(find-efunction ')\")
+             (find-efunction 'ee-eval-sexp-eol)
+             (find-efunction 'ee-eval-sexp-eol \"3:\")
+             (eek \"2*<up> M-3 M-e\")
+
+  (find-emacs-keys-intro \"6. Windows\")
+  (find-emacs-keys-intro \"6. Windows\" \"L|R\")
+
+  (find-eev-intro)
+  (find-eev-intro \"M-5 M-0 M-j\")
+  (find-eev-intro \"(find-multiwindow-intro)\")
+  (find-multiwindow-intro)
+
+  (find-wset \"13o_2o2o23oo33ooo\"  '(find-ebuffer \"B\"))
+  (find-wset \"13o_2o2o23oo33ooo+\" '(find-ebuffer \"B\"))
+  (find-2a nil '(find-efunction 'ee-eval-sexp-eol))
+  (find-2b nil '(find-efunction 'ee-eval-sexp-eol))
+
+
+
+8. IRC
+======
+(TO DO: explain this:)
+
+  (find-efunction 'ee-0x0-upload-region)
+  (find-efunction 'ee-0x0-upload-region \"aliased to `u0'\")
+
+
+9. Git
+======
+Example:
+
+  (progn
+
+    ;; Links to the git repository:
+    ;; https://github.com/edrx/emacs-lua
+    ;; https://github.com/edrx/emacs-lua/blob/main/tests.e
+    ;; https://raw.githubusercontent.com/edrx/emacs-lua/main/tests.e
+
+    (setq ee-emluagit-base
+	  \"https://raw.githubusercontent.com/edrx/emacs-lua/main/\")
+    (defun find-emluagitfile (fname &rest rest)
+      (apply 'find-wget (format \"%s%s\" ee-emluagit-base fname) rest))
+    (defun find-emluagit (fname &rest rest)
+      (apply 'find-wgeta (format \"%s%s\" ee-emluagit-base fname) rest))
+
+    ;; Tests:
+    ;; (find-emluagit \"tests.e\")
+    ;; (find-emluagit \"tests.e\" \"find-angg-and-find-es\")
+    ;; (find-emluagit \"tests.e\" \"find-angg-and-find-es\" \"Tests:\")
+    ;; (find-emluagitfile \"tests.e\" \"Warning:\")
+
+    ;; Links to a local copy of the git repository:
+    ;; (find-git-links \"https://github.com/edrx/emacs-lua\" \"emlua\")
+    ;; (setq ee-git-dir \"~/usrc/\")
+    ;;
+    ;; (find-code-c-d \"emlua\" \"~/usrc/emacs-lua/\" :anchor)
+    (code-c-d \"emlua\" \"~/usrc/emacs-lua/\" :anchor)
+    ;;
+    ;; Tests:
+    ;; (find-emlua \"\")
+    ;; (find-emlua \"tests.e\")
+    ;; (find-emlua \"tests.e\" \"find-angg-and-find-es\")
+    ;; (find-emlua \"tests.e\" \"find-angg-and-find-es\" \"Tests:\")
+    ;; (find-emluafile \"tests.e\" \"Warning:\")
+
+    ;; Compare:
+    ;; (find-emluagit \"tests.e\" \"find-angg-and-find-es\")
+    ;; (find-emlua    \"tests.e\" \"find-angg-and-find-es\")
+
+    )
+
+
 " pos-spec-list)))
 
 ;; (find-escripts-intro)
@@ -12253,24 +12498,30 @@ that after discovering that many Windows programmers don't know how to
 use terminals I spent more than one week trying to figure out how to
 proceed.
 
-Version of these instructions: 2020feb20.
+Version of these instructions: 2021sep20.
 
 
 
 
 1. Download and install Emacs
 =============================
-Download one of the .zips below:
-http://gnu.c3sl.ufpr.br/ftp/emacs/windows/emacs-26/
-http://gnu.c3sl.ufpr.br/ftp/emacs/windows/emacs-26/README
-http://gnu.c3sl.ufpr.br/ftp/emacs/windows/emacs-26/emacs-26.3-i686.zip     (32 bits)
-http://gnu.c3sl.ufpr.br/ftp/emacs/windows/emacs-26/emacs-26.3-x86_64.zip   (64 bits)
+Read the README below and then install Emacs using either the
+link to the .exe or the link to the .zip:
 
-then unpack the .zip and create a desktop icon or shortcut to
+http://alpha.gnu.org/gnu/emacs/pretest/windows/emacs-28/
+http://alpha.gnu.org/gnu/emacs/pretest/windows/emacs-28/README-windows-binaries
+http://alpha.gnu.org/gnu/emacs/pretest/windows/emacs-28/emacs-28.0.50-snapshot-2021-01-15-installer.exe
+http://alpha.gnu.org/gnu/emacs/pretest/windows/emacs-28/emacs-28.0.50-snapshot-2021-01-15.zip
+
+If you prefer Emacs27, use these links:
+
+https://ftp.gnu.org/gnu/emacs/windows/emacs-27/
+https://ftp.gnu.org/gnu/emacs/windows/emacs-27/README-windows-binaries
+https://ftp.gnu.org/gnu/emacs/windows/emacs-27/emacs-27.2-x86_64-installer.exe
+https://ftp.gnu.org/gnu/emacs/windows/emacs-27/emacs-27.2-x86_64.zip
+
+You may need to create a desktop icon or shortcut to
 <emacsdir>/bin/runemacs.exe.
-
-The official instructions are here (but you don't need them):
-https://www.gnu.org/software/emacs/download.html#windows
 
 Note: don't use Emacs25 on Windows - it can't access the package repository!  The details are here:
 https://emacs.stackexchange.com/questions/233/how-to-proceed-on-package-el-signature-check-failure/52823#52823
@@ -12541,7 +12792,97 @@ As an exercise, try to give these commands to the Windows shell:
 
 
 
-6. Lua
+
+
+
+
+6. Eepitch on Windows
+=====================
+The main tutorial of eev explains the best way to use shells from
+Emacs in this section:
+
+  (find-eev-quick-intro \"6. Controlling shell-like programs\")
+
+The default shell on Windows is a very bad one - cmd.exe, that we
+saw in section 5.5 - and by default `eepitch-shell' uses cmd.exe.
+One alternative is to use Eshell:
+
+  (find-node \"(eshell)Top\")
+
+Most people who use Windows have very little experience with
+shells, and I am trying to use eev to create tutorials to save
+them...
+
+   This is a project that is still in a VERY early stage!!! 
+   I will describe its current state, and I will end this   
+   section with a \"please test this and get in touch!\".     
+
+I am preparing a one-session workshop for Windows users that
+should happen in the middle of oct/2021. Most of my material
+about it is in Portuguese, but In 2021oct03 I sent these two
+e-mails to the help-gnu-emacs mailing list, in which I explained
+it in English and asked for help:
+
+  https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00037.html
+  https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00045.html
+
+Many features in eev require a program called wget, and I need to
+prepare instructions for installing wget that can be executed by
+people who have never used a terminal or a shell in their lives.
+I _have the impression_ that it will be better to use PowerShell
+for that. The Wikipedia page about PowerShell is here:
+
+  https://en.wikipedia.org/wiki/PowerShell
+
+It seems that every recent version of Windows comes with
+PowerShell, and it seems that one of the ways of running
+PowerShell is to open a terminal and run the command \"pwsh\" in
+it... [please, people, can you test this and tell me if it works?]
+
+In 2021oct04 I added support for PowerShell to eev, but I was
+only able to test it on Linux, using a version of PowerShell that
+runs on Linux...
+
+
+
+6.1. `eepitch-pwsh': a test
+---------------------------
+Please, people, can you test the eepitch block below with <f8>s
+and tell me if you get something similar to what I got in this
+screenshot?
+
+Link to the screenshot:
+
+  http://angg.twu.net/2021.1-projeto/eepitch-pwsh.png
+
+Here is the eepitch block:
+
+ (eepitch-pwsh)
+ (eepitch-kill)
+ (eepitch-pwsh)
+mkdir -p ~/bin/
+cd       ~/bin/
+rm -fv   ~/bin/wget.exe
+wget http://angg.twu.net/2021.1-projeto/wget.exe
+ls -l wget.exe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7. Lua
 ======
 Lua is a programming language that many people - like me - find
 much better and much simpler than Python.  The examples of
@@ -12881,6 +13222,11 @@ It is meant as both a tutorial and a sandbox.
 This intro is a very quick introduction to Emacs Lisp. Its intent
 is not to teach people how to _write_ Elisp code, only to teach
 them how to _read_ Elisp code.
+
+Different people prefer different kinds of tutorials.
+Many people love the eintr, but I don't: (find-node \"(eintr)Top\")
+This tutorial here is what I would have liked to have had access to
+when I started learning Emacs Lisp.
 
 TODO: integrate this with these older intros:
   (find-eval-intro)
@@ -13460,6 +13806,13 @@ will give you information about the current definition.
 
 
 
+
+12. Some advanced topics
+========================
+See: (find-lexical-intro)
+
+
+
 " pos-spec-list)))
 
 ;; (find-elisp-intro)
@@ -13668,7 +14021,7 @@ which means that they operate on the same `x'.
 Different calls to this function generate getters and setters
 with independent lexical environments - which means that they
 operate on independent `x's.
-This defun need to be executed in lexical binding mode.\"
+This defun needs to be executed in lexical binding mode.\"
   (let* ((x nil))
     (list (lambda () x)
           (lambda (newvalue) (setq x newvalue)))))

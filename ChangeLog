@@ -1,3 +1,191 @@
+2021-10-09  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el (ee-find-firefox-page): use `ee-firefox-program'.
+	(ee-find-googlechrome-page): use `ee-googlechrome-program'.
+
+	* eev-intro.el (find-eev-install-intro): new section: "5.4.
+	`package-install-file'".
+	(find-eev-install-intro): new section: "5.5. `use-package'".
+
+	* eev-on-windows.el (ee-dospath-to-unix, ee-dospath-to-dos)
+	(ee-dospath-split, ee-dospath-unsplit, ee-dospath-add)
+	(ee-add-to-PATH): deleted.
+
+	* eev-testblocks.el (ee-insert-test-racket-mode): new function.
+
+2021-10-08  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-on-windows.el (ee-download-with-eww, ee-use-eshell)
+	(ee-use-shell, ee-use-bullets, ee-use-red-stars)
+	(ee-use-gnu-linux, ee-use-windows): new functions.
+
+	* eev-audiovideo.el (ee-mpv-program): new variable.
+	(ee-find-mpv-video): use `ee-mpv-program'.
+
+	* eev-brxxx.el (ee-googlechrome-program): new variable.
+	(ee-firefox-program): new variable.
+	(find-googlechrome): use `ee-googlechrome-program'.
+	(find-firefox): use `ee-firefox-program'.
+
+	* eev-plinks.el (ee-wget-program): new variable.
+	(find-wget00): use `ee-wget-program'.
+
+	* eev-hlinks.el (ee-find-evardescr-links): added `find-evariable'.
+	(ee-find-efunctiondescr-links): added `find-efunction'.
+
+2021-10-07  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (find-eek): new function.
+
+2021-10-06  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-plinks.el (ee-urlretrieve-header1, ee-urlretrieve-ok)
+	(ee-urlretrieve-assert-ok): new functions.
+
+	* eev-code.el: added a (code-c-d "eshell" ...).
+
+	* eev-plinks.el (ee-very-primitive-wget1, ee-eshell/fakewget): new
+	functions.
+
+2021-10-05  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-plinks.el (ee-very-primitive-wget0): new function.
+
+	* eepitch.el (find-vtermprocess, eepitch-vterm): rewritten.
+	Beware: their arguments are different now!
+	(eepitch-ansiterm, eepitch-line-ansiterm)
+	(find-ansitermprocess, eepitch-pwsh)
+	(eepitch-pwsh2): new functions.
+	(eepitch-ansiterm): fixed some typos.
+
+2021-10-04  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-plinks.el (find-urlretrieve00): rewritten.
+	(ee-urlretrieve-3, find-urlretrieve0, find-urlretrieve): deleted.
+	(ee-urlretrieve-headers): new variable.
+	(find-urlretrieve00, ee-urlretrieve0): new functions.
+
+2021-10-03  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el (ee-fname-page-to-url): if the argument FNAME is
+	already a URL then don't try to convert it to a URL again.
+
+2021-10-02  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (ee-find-epackage-pkg-to-c): new function.
+	(ee-find-epackage-links0): use `ee-find-epackage-pkg-to-c'.
+	(find-epackage-links): use `ee-find-epackage-pkg-to-c'.
+
+	* eev-hlinks.el (ee-find-epackage-links): small fixes.
+
+	* eev-elinks.el (find-color-links): renamed to
+	`find-ecolor-links'. There were some references to
+	`find-color-links' and some to `find-ecolor-links' in the code; I
+	think that the `find-color-links's were typos.
+	(ee-color-choose-tk): use the file /tmp/ee.tcl instead of
+	~/.eev/ee.tcl.
+
+	* eev-tlinks.el (find-angg-es-links): new function.
+
+2021-10-01  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (ee-face-at-point): new function.
+	(ee-face-of-glyph): new function.
+	(find-eface-links): use `ee-face-at-point'.
+
+	* eev-blinks.el (ee-find-efaces-hack): new function.
+	(find-efaces): use `ee-find-efaces-hack'.
+	(find-efacedescr): use `ee-face-at-point'.
+
+2021-09-27  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-intro.el (find-escripts-intro): new section: "6. Tutorials".
+
+2021-09-25  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eejump.el, eepitch.el, eev-anchors.el, eev-audiovideo.el,
+	eev-beginner.el, eev-blinks.el, eev-bounded.el, eev-brxxx.el,
+	eev-channels.el, eev-code.el, eev-codings.el, eev-compose-hash.el,
+	eev-edit.el, eev-elinks.el, eev-env.el, eev-eval.el,
+	eev-explain.el, eev-flash.el, eev-hlinks.el, eev-hydras.el,
+	eev-intro.el, eev-load.el, eev-mode.el, eev-multiwindow.el,
+	eev-on-windows.el, eev-pdflike.el, eev-plinks.el, eev-prepared.el,
+	eev-rcirc.el, eev-readme.el, eev-template0.el, eev-testblocks.el,
+	eev-tla.el, eev-tlinks.el, eev-wrap.el: added a "-*-
+	lexical-binding: nil; -*-" to the end of the first line of each of
+	these files.
+
+	* eev-intro.el (find-eev-install-intro): in "7.2. Dynamic binding"
+	explain that I decided to make all the elisp files in eev use
+	dynamic binding for simplicity.
+
+	* eev-pdflike.el (code-xxxpdf-family, find-code-xxxpdf-family)
+	(ee-code-xxxpdf-family, code-xxxpdftext-family)
+	(find-code-xxxpdftext-family, ee-code-xxxpdftext-family)
+	(code-xxxpdf-alias, find-code-xxxpdf-alias)
+	(ee-code-xxxpdf-alias): commented out - will be deleted soon.
+
+2021-09-24  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-pdflike.el (ee-find-firefox-page): new function. It is an
+	internal function used by `find-firefox-page', that is defined by
+	`(code-pdfbackend "firefox-page")'. Also, now on Window$ systems
+	`find-pdf-page' uses `find-firefox-page' by default.
+
+2021-09-22  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-intro.el (find-psne-intro): updated the URL to the PDF of
+	J.M. Coetzee's "The Lives of Animals".
+
+	* eev-audiovideo.el (ee-time-to-youtube-time): added an optional
+	argument `c'.
+
+2021-09-20  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-intro.el (find-windows-beginner-intro): give links for
+	installing Emacs27 instead of Emacs26.
+
+2021-09-19  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-testblocks.el (ee-insert-test-c-mode): new function.
+
+2021-09-17  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-testblocks.el (ee-insert-test-lisp-mode): new function.
+
+2021-09-15  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (find-eepitch-bullet-links): added more text.
+
+2021-09-13  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eepitch.el (eepitch-regexp, eepitch-comment-regexp): make red
+	bullets play the same role as the red stars.
+
+	* eev-tlinks.el (find-eepitch-bullet-links): new function.
+
+2021-09-10  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (find-epackage-links): fixed a small bug.
+
+2021-09-09  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-testblocks.el (ee-insert-test-scheme-mode): use Chez Scheme
+	instead of Guile. The version for Guile was commented out.
+
+	* eepitch.el (eepitch-scheme): new function.
+
+2021-09-08  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-testblocks.el (ee-insert-test-tcl-mode): use
+	"THIS_IS_A_TEST_BLOCK" instead of "COMMENTED_OUT".
+
+2021-09-07  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-testblocks.el (ee-insert-test-js-mode): new function.
+
+	* eev-tlinks.el (find-debpkg-links): added a few more links.
+
 2021-08-22  Eduardo Ochs  <eduardoochs@gmail.com>
 
 	* eev-tlinks.el (ee-youtubedl-subtitle-p): new function.

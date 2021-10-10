@@ -1,4 +1,4 @@
-;;; eev-testblocks.el - create "test blocks" using multiline comments.
+;;; eev-testblocks.el - create "test blocks" using multiline comments.  -*- lexical-binding: nil; -*-
 
 ;; Copyright (C) 2019-2021 Free Software Foundation, Inc.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20210419
+;; Version:    20211009
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-testblocks.el>
@@ -77,6 +77,21 @@
 ;; «examples»  (to ".examples")
 ;; See: (find-eepitch-intro "3.1. `find-eeit-links'")
 
+(defun ee-insert-test-c-mode ()
+  (interactive)
+  (let* ((fnamec (buffer-name))
+	 (fname  (replace-regexp-in-string ".c$" "" fnamec)))
+    (insert (ee-template0 "\
+/*
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+gcc -o {fname} {fnamec}
+./{fname}
+
+*/
+"))))
+
 (defun ee-insert-test-haskell-mode ()
   (interactive)
   (insert (format "
@@ -89,6 +104,18 @@
 -}
 " (buffer-name))))
 
+(defun ee-insert-test-js-mode ()
+  (interactive)
+  (insert (format "
+/*
+ (eepitch-nodejs)
+ (eepitch-kill)
+ (eepitch-nodejs)
+require(\"./%s\")
+
+*/
+" (buffer-name))))
+
 (defun ee-insert-test-julia-mode ()
   (interactive)
   (insert (format "
@@ -99,6 +126,18 @@
 include(\"%s\")
 
 =#
+" (buffer-name))))
+
+(defun ee-insert-test-lisp-mode ()
+  (interactive)
+  (insert (format "
+#|
+ (eepitch-sbcl)
+ (eepitch-kill)
+ (eepitch-sbcl)
+(load \"%s\")
+
+|#
 " (buffer-name))))
 
 (defun ee-insert-test-lua-mode ()
@@ -137,6 +176,18 @@ exec(open(\"%s\").read(), globals())
 \"\"\"
 " (buffer-name))))
 
+(defun ee-insert-test-racket-mode ()
+  (interactive)
+  (insert (format "
+#|
+ (eepitch-racket)
+ (eepitch-kill)
+ (eepitch-racket)
+(load \"%s\")
+
+|#
+" (buffer-name))))
+
 (defun ee-insert-test-ruby-mode ()
   (interactive)
   (insert (format "
@@ -149,17 +200,31 @@ load \"%s\"
 =end
 " (buffer-name))))
 
+;; For Chez Scheme.
 (defun ee-insert-test-scheme-mode ()
   (interactive)
   (insert (format "
-#!
- (eepitch-guile)
+#|
+ (eepitch-scheme)
  (eepitch-kill)
- (eepitch-guile)
+ (eepitch-scheme)
 (load \"%s\")
 
-!#
+|#
 " (buffer-name))))
+
+;; ;; For Guile.
+;; (defun ee-insert-test-scheme-mode ()
+;;   (interactive)
+;;   (insert (format "
+;; #|
+;;  (eepitch-guile)
+;;  (eepitch-kill)
+;;  (eepitch-guile)
+;; (load \"%s\")
+;; 
+;; |#
+;; " (buffer-name))))
 
 (defun ee-insert-test-sh-mode ()
   (interactive)
@@ -176,7 +241,7 @@ load \"%s\"
 (defun ee-insert-test-tcl-mode ()
   (interactive)
   (insert (format "
-set COMMENTED_OUT {
+set THIS_IS_A_TEST_BLOCK {
  (eepitch-tclsh)
  (eepitch-kill)
  (eepitch-tclsh)

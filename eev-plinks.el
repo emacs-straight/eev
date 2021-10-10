@@ -1,6 +1,6 @@
-;;; eev-plinks.el -- elisp hyperlinks to invoke external processes.
+;;; eev-plinks.el -- elisp hyperlinks to invoke external processes.  -*- lexical-binding: nil; -*-
 
-;; Copyright (C) 2012-2019 Free Software Foundation, Inc.
+;; Copyright (C) 2012-2021 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20210807
+;; Version:    20211009
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-plinks.el>
@@ -256,37 +256,96 @@
 ;;;  \__,_|_|  |_|     |_|  \___|\__|_|  |_|\___| \_/ \___|
 ;;;                                                        
 ;; «find-urlretrieve»  (to ".find-urlretrieve")
-;; See: (find-node "(url)Retrieving URLs" "url-retrieve-synchronously")
-;; Tests: http://angg.twu.net/e/emacs.e.html#find-urlretrieve
-;;                    (find-es "emacs"      "find-urlretrieve")
+;; See: http://angg.twu.net/elisp/url-retrieve-test.el
+;;              (find-angg "elisp/url-retrieve-test.el")
+;; Tests:
+;;   (find-urlretrieve00 "http://foo/bar")
+;;   (find-urlretrieve00 "http://angg.twu.net/")
+;;   (find-urlretrieve00 "http://angg.twu.net/doesnotexist")
+;;   (find-estring (ee-urlretrieve0 "http://angg.twu.net/"))
+;;   (find-estring (ee-urlretrieve0 "http://angg.twu.net/doesnotexist"))
 ;;
-(defun find-urlretrieve00 (url &rest pos-spec-list)
-  "Download URL with `url-retrieve-synchronously'. Show the full response."
-  (apply 'find-ebuffer (url-retrieve-synchronously url) pos-spec-list))
+(defvar ee-urlretrieve-headers ""
+  "The HTTP headers returned by the last call to `find-urlretrieve'.")
 
-(defun ee-urlretrieve-3 (url)
-  "Download URL with `url-retrieve-synchronously'. Return status, headers, body."
-  (find-urlretrieve00 url 1 "\n\n")
-  (let* ((header (buffer-substring 1 (- (point) 1)))
-	 (body   (buffer-substring (point) (point-max)))
-	 (status (replace-regexp-in-string "\n.*" "" header)))
-    (ee-kill-this-buffer)
-    (list status header body)))
+(defun ee-urlretrieve-header1 ()
+  "Return the first line of `ee-urlretrieve-headers'."
+  (replace-regexp-in-string "\n[^z-a]*" "" ee-urlretrieve-headers))
 
-(defun find-urlretrieve0 (url)
-  "Download URL with `url-retrieve-synchronously'. Return body as a raw string."
-  (let* ((shb (ee-urlretrieve-3 url))
-	 (status (nth 0 shb))
-	 (body   (nth 2 shb)))
-    (if (equal status "HTTP/1.1 200 OK")
-	body
-      (error "%s -> %s" url status))))
+(defun ee-urlretrieve-ok ()
+  "Check if the first line of `ee-urlretrieve-headers' is \"HTTP/1.1 200 OK\"."
+  (equal "HTTP/1.1 200 OK" (ee-urlretrieve-header1)))
 
-(defun find-urlretrieve (url &rest pos-spec-list)
-  "Download URL with `url-retrieve-synchronously'.
-TODO: detect the encoding!!!"
-  (let ((ee-buffer-name url))
-    (apply 'find-estring (find-urlretrieve0 url) pos-spec-list)))
+(defun ee-urlretrieve-assert-ok ()
+  "Check if the first line of `ee-urlretrieve-headers' is \"HTTP/1.1 200 OK\".
+If it is something else, throw an error."
+  (if (not (ee-urlretrieve-ok))
+      (error "Error: %s" (ee-urlretrieve-header1))))
+
+(defun find-urlretrieve00 (url)
+  "An internal function used by `find-urlretrieve'."
+  (find-ebuffer
+   (url-retrieve-synchronously url 'silent 'inhibit-cookies)
+   "\n\n"))
+
+;; 2021oct08: The functions below are broken - they corrupt non-ascii files.
+;; See: https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00174.html
+;;      (find-eev "eev-on-windows.el" "ee-download-with-eww")
+;; TODO: fix them.
+
+(defun ee-urlretrieve0 (url)
+  "Use `url-retrieve-synchronously' to download URL.
+When `url-retrieve-synchronously' is used for http or https it
+returns a buffer containing the response headers, then a blank
+line, then the contents (the \"message body\"). This function
+saves the response headers in the variable
+`ee-urlretrieve-headers', returns the message body, and deletes
+the buffer.\n
+This function doesn't perform any error checking and is as
+simplistic as possible. Use it only to experiment with
+`url-retrieve-synchronously'."
+  (find-urlretrieve00 url)
+  (setq ee-urlretrieve-headers
+	(buffer-substring (point-min) (- (point) 2)))
+  (prog1 (buffer-substring (point) (point-max))
+    (kill-buffer (current-buffer))))
+
+(defun ee-very-primitive-wget0 (url fname)
+  "Try to download the contents of URL into FNAME.
+If that works return the number of bytes written.
+If that fails return nil or throw an error.
+This is a quick hack."
+  (let* ((contents (ee-urlretrieve0 url))
+	 (ok (string-match "^HTTP/1.1 200 OK" ee-urlretrieve-headers)))
+    (when ok
+      (write-region contents nil (ee-expand fname))
+      (string-bytes contents))))
+
+(defun ee-very-primitive-wget1 (url)
+  "This is like `ee-very-primitive-wget0', but always returns a string.
+If URL is, say, http://foo.bar/plic/bletch.html then save its
+contents in a file bletch.html in the current directory.
+Return \"Downloaded nnn bytes\" in case of success and the HTTP
+headers in case of error. This is a quick hack."
+  (let* ((fname (replace-regexp-in-string ".*/" "" url))
+         (rslt (ee-very-primitive-wget0 url fname)))
+    (if rslt (format "Downloaded %d bytes" rslt)
+      (format "Error:\n%s\n" ee-urlretrieve-headers))))
+
+;; We can use `ee-very-primitive-wget1' to implement simplistic
+;; versions of wget in eshell - the definition below is an example.
+;; To make it work, run something like:
+;;   (defalias    'eshell/wget 'ee-eshell/fakewget)
+;; To delete it, do:
+;;   (fmakunbound 'eshell/wget)
+;; See:
+;;   (find-eshellnode "Built-ins")
+;;   (find-eshellgrep "grep --color -nH --null -e eshell/ *.el")
+;;
+(defun ee-eshell/fakewget (&rest args)
+  (let* ((lastarg (nth (- (length args) 1) args)))
+    (ee-very-primitive-wget1 lastarg)))
+
 
 
 
@@ -299,8 +358,10 @@ TODO: detect the encoding!!!"
 ;;
 ;; «find-wget» (to ".find-wget")
 ;;
+(defvar ee-wget-program "wget")
+
 (defun find-wget00 (url)
-  (find-callprocess00 `("wget" "-q" "-O" "-" ,url)))
+  (find-callprocess00 `(,ee-wget-program "-q" "-O" "-" ,url)))
 
 (defun find-wget (url &rest pos-spec-list)
   "Download URL with \"wget -q -O - URL\" and display the output.
