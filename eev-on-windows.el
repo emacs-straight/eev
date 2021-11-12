@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20211107
+;; Version:    20211110
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-on-windows.el>
@@ -29,14 +29,29 @@
 ;;                                                (find-eev-intro)
 
 ;; «.how-to-test-this»			(to "how-to-test-this")
+;; «.requires»				(to "requires")
 ;; «.ee-download-with-eww»		(to "ee-download-with-eww")
-;; «.ee-use-eshell»			(to "ee-use-eshell")
-;; «.ee-use-bullets»			(to "ee-use-bullets")
-;; «.ee-use-find-angg-es-remote»	(to "ee-use-find-angg-es-remote")
-;; «.ee-use-find-angg-es-local»		(to "ee-use-find-angg-es-local")
-;; «.ee-use-windows»			(to "ee-use-windows")
-;; «.ee-use-gnu-linux»			(to "ee-use-gnu-linux")
-;; «.ee-use-gnu-linux-but-simulate»	(to "ee-use-gnu-linux-but-simulate")
+;; «.eshell»				(to "eshell")
+;;   «.ee-use-eshell»			(to "ee-use-eshell")
+;;   «.ee-use-shell»			(to "ee-use-shell")
+;; «.lua»				(to "lua")
+;;   «.ee-use-lua»			(to "ee-use-lua")
+;;   «.ee-use-lua-exe»			(to "ee-use-lua-exe")
+;; «.wget»				(to "wget")
+;;   «.ee-use-wget-exe»			(to "ee-use-wget-exe")
+;;   «.ee-use-wget»			(to "ee-use-wget")
+;; «.ee-use-firefox»			(to "ee-use-firefox")
+;; «.ee-use-googlechrome»		(to "ee-use-googlechrome")
+;; «.red-stars»				(to "red-stars")
+;;   «.ee-use-bullets»			(to "ee-use-bullets")
+;;   «.ee-use-red-stars»		(to "ee-use-red-stars")
+;; «.find-angg-es»			(to "find-angg-es")
+;;   «.ee-use-find-angg-es-remote»	(to "ee-use-find-angg-es-remote")
+;;   «.ee-use-find-angg-es-local»	(to "ee-use-find-angg-es-local")
+;; «.high-level»			(to "high-level")
+;;   «.ee-use-windows»			(to "ee-use-windows")
+;;   «.ee-use-gnu-linux»		(to "ee-use-gnu-linux")
+;;   «.ee-use-gnu-linux-but-simulate»	(to "ee-use-gnu-linux-but-simulate")
 ;; «.directories»			(to "directories")
 ;; «.basic-tests»			(to "basic-tests")
 
@@ -46,48 +61,22 @@
 ;;; Commentary:
 ;;
 ;; Experimental, undocumented, and messy. Every time that I give a
-;; workshop to Windows users this file changes a lot. The most recent
-;; changes in this file correspond to a workshop that I will give in
-;; november 2021, and that I described in this thread:
+;; workshop to Windows users this file changes a lot. Most of what was
+;; here in the last revision was rewritten in a more human-readable
+;; form and placed in:
 ;;
-;; https://lists.gnu.org/archive/html/help-gnu-emacs/2021-10/msg00037.html
-;;
-;; I can't test the settings for Windows myself, but two friends of
-;; mine, Daniel Almeida and Daniel Bastos, are helping me to test this
-;; before the workshop.
-;;
-;; This file is not loaded by default. See:
-;;   (find-eev "eev-load.el")
+;;   (find-windows-beginner-intro)
 
 
 ;; «how-to-test-this»  (to ".how-to-test-this")
 ;;
+;; THIS BLOCK IS BEING REWRITTEN AND IS CURRENTLY A MESS.
+;; Most of the docs and tests were moved to:
+;;
+;;   (find-windows-beginner-intro)
+;;
 ;; 0.1. How to test this
 ;; =====================
-;; The HTMLized version of this file is here:
-;;   http://angg.twu.net/eev-current/eev-on-windows.el.html
-;; The HTMLized version may be more recent than the one here:
-;;   (find-eev "eev-on-windows.el")
-;;
-;; Here's how to load it in Emacs and run its tests.
-;;   1. update eev using "M-x list-packages eev",
-;;   2. restart emacs to be 100% sure that it will use the new eev,
-;;   3. run "M-x eev-beginner" to turn eev-mode on,
-;;   4. run `M-j' to remember how to use the main keys of eev,
-;;   5. run "M-x find-eevfile" to open the directory with the source
-;;      files of eev,
-;;   6. open the file eev-on-windows.el in that directory,
-;;   7. run the sexps below with `M-e' on each line - they are needed
-;;      to make sure that you have wget.exe and pdftotext.exe:
-;;
-;;      (require 'eev-on-windows)
-;;      (mkdir "~/bin/" t)
-;;      (delete-file "~/bin/wget.exe")
-;;      (ee-download-with-eww "http://angg.twu.net/2021-oficina/wget.exe" "~/bin/")
-;;      (delete-file "~/bin/pdftotext.exe")
-;;      (ee-download-with-eww "http://angg.twu.net/2021-oficina/pdftotext.exe" "~/bin/")
-;;
-;;   8. run these sexps with `M-e' on each line:
 ;;
 ;;      (require 'eev-on-windows)
 ;;      (ee-use-windows)
@@ -120,13 +109,24 @@
 
 
 
+;; «requires»  (to ".requires")
+;;
 (require 'eww)
 (require 'eshell)
 (require 'em-alias)
 
 
+
+;;;                          
+;;;   _____      ____      __
+;;;  / _ \ \ /\ / /\ \ /\ / /
+;;; |  __/\ V  V /  \ V  V / 
+;;;  \___| \_/\_/    \_/\_/  
+;;;                          
 ;; «ee-download-with-eww»  (to ".ee-download-with-eww")
-;; Test:
+;; See: (find-windows-beginner-intro "7. eev-on-windows.el")
+;;      (find-node "(eww)Top")
+;; Test with:
 ;;   (mkdir "~/bin/" t)
 ;;   (delete-file "~/bin/wget.exe")
 ;;   (ee-download-with-eww "http://angg.twu.net/2021-oficina/wget.exe" "~/bin/")
@@ -135,7 +135,20 @@
   (url-retrieve url #'eww-download-callback (list url dir)))
 
 
+
+;;;  _____     _          _ _ 
+;;; | ____|___| |__   ___| | |
+;;; |  _| / __| '_ \ / _ \ | |
+;;; | |___\__ \ | | |  __/ | |
+;;; |_____|___/_| |_|\___|_|_|
+;;;                           
+;; «eshell»  (to ".eshell")
+
 ;; «ee-use-eshell»  (to ".ee-use-eshell")
+;; Redefine `eepitch-shell' and `eepitch-shell2' to make them use
+;; Eshell instead of the default shell.
+;; See: (find-windows-beginner-intro "5.6. Eshell")
+;;      (find-windows-beginner-intro "7.1. `ee-use-windows'")
 ;;
 (defun ee-use-eshell ()
   (interactive)
@@ -143,32 +156,109 @@
   (defun eepitch-shell2 () (interactive) (eepitch-eshell2))
   )
 
+;; «ee-use-shell»  (to ".ee-use-shell")
+;; Redefine `eepitch-shell' and `eepitch-shell2' with their default
+;; definitions. Running this cancels the effect of `ee-use-eshell'.
+;; See: (find-eev "eepitch.el" "eepitch-shell")
+;;
 (defun ee-use-shell ()
   (interactive)
-  (defun eepitch-shell  () (interactive) (eepitch '(shell "*shell*")))
+  (defun eepitch-shell  () (interactive) (eepitch '(shell)))
   (defun eepitch-shell2 () (interactive) (eepitch '(shell "*shell 2*")))
   )
 
+
+
+;;;                     _   
+;;; __      ____ _  ___| |_ 
+;;; \ \ /\ / / _` |/ _ \ __|
+;;;  \ V  V / (_| |  __/ |_ 
+;;;   \_/\_/ \__, |\___|\__|
+;;;          |___/          
+;;
+;; «wget»  (to ".wget")
+;; These functions configure what wget to use: on GNU/Linux we use the
+;; wget that is on the $PATH, and on M$ Windows we use ~/bin/wget.exe.
+;;
+;;  BIG WARNING: 
+;; These functions DELETE your eshell-aliases-file and create a new
+;; one with a single alias inside!!! See:
+;;   (find-node "(eshell)Aliases" "eshell-aliases-file")
+
+;; «ee-use-wget-exe»  (to ".ee-use-wget-exe")
+(defun ee-use-wget-exe ()
+  (interactive)
+  (delete-file eshell-aliases-file)
+  (eshell/alias "wget"  "~/bin/wget.exe $*")
+  (setq ee-wget-program "~/bin/wget.exe"))
+
+;; «ee-use-wget»  (to ".ee-use-wget")
+(defun ee-use-wget ()
+  (interactive)
+  (delete-file eshell-aliases-file)
+  (eshell/alias "wget"  "wget $*")
+  (setq ee-wget-program "wget"))
+
+
+;;;  _____ _           __           
+;;; |  ___(_)_ __ ___ / _| _____  __
+;;; | |_  | | '__/ _ \ |_ / _ \ \/ /
+;;; |  _| | | | |  __/  _| (_) >  < 
+;;; |_|   |_|_|  \___|_|  \___/_/\_\
+;;;                                 
+;; «ee-use-firefox»  (to ".ee-use-firefox")
+(defun ee-use-firefox ()
+  (interactive)
+  (setq ee-find-youtube-video-program 'find-firefox)
+  (defalias 'find-pdf-page 'find-firefox-page))
+
+;; «ee-use-googlechrome»  (to ".ee-use-googlechrome")
+(defun ee-use-googlechrome ()
+  (interactive)
+  (setq ee-find-youtube-video-program 'find-googlechrome)
+  (defalias 'find-pdf-page 'find-googlechrome-page))
+
+
+
+
+;;;  ____          _       _                 
+;;; |  _ \ ___  __| |  ___| |_ __ _ _ __ ___ 
+;;; | |_) / _ \/ _` | / __| __/ _` | '__/ __|
+;;; |  _ <  __/ (_| | \__ \ || (_| | |  \__ \
+;;; |_| \_\___|\__,_| |___/\__\__,_|_|  |___/
+;;;                                          
+;; «red-stars»  (to ".red-stars")
+;; In workshops for beginners I prefer to make them use red bullets
+;; instead of red stars because the red bullets don't get corrupted
+;; when pasted to Telegram of Gmail. See:
+;;   (find-eev-quick-intro "6.4. Red stars")
+;;   (find-red-star-links)
 
 ;; «ee-use-bullets»  (to ".ee-use-bullets")
 ;; From: (find-red-star-links 2 "red bullets by default")
 ;;
 (defun ee-use-bullets ()
   (interactive)
-  (eepitch-set-glyph0 ?\u2022 ?\u2022 'eepitch-star-face)
-  (defun ee-adjust-red-stars (str) (replace-regexp-in-string "" "•" str))
-  )
+  (eepitch-set-glyph0 ?• ?• 'eepitch-star-face)
+  (defun ee-adjust-red-stars (str) (replace-regexp-in-string "" "•" str)))
 
+;; «ee-use-red-stars»  (to ".ee-use-red-stars")
 (defun ee-use-red-stars ()
   (interactive)
-  (defun ee-adjust-red-stars (str) str)
-  )
+  (defun ee-adjust-red-stars (str) str))
 
 
-;; «ee-use-find-angg-es-remote»  (to ".ee-use-find-angg-es-remote")
-;; «ee-use-find-angg-es-local»  (to ".ee-use-find-angg-es-local")
-;; See: (find-angg-es-links)
+;;;   __ _           _                                  __        
+;;;  / _(_)_ __   __| |       __ _ _ __   __ _  __ _   / /__  ___ 
+;;; | |_| | '_ \ / _` |_____ / _` | '_ \ / _` |/ _` | / / _ \/ __|
+;;; |  _| | | | | (_| |_____| (_| | | | | (_| | (_| |/ /  __/\__ \
+;;; |_| |_|_| |_|\__,_|      \__,_|_| |_|\__, |\__, /_/ \___||___/
+;;;                                      |___/ |___/              
 ;;
+;; «find-angg-es»  (to ".find-angg-es")
+;; See: (find-angg-es-links)
+
+;; «ee-use-find-angg-es-local»  (to ".ee-use-find-angg-es-local")
 (defun ee-use-find-angg-es-local ()
   (interactive)
   (code-c-d "angg" "~/" :anchor :grep)
@@ -177,6 +267,7 @@
     (apply 'find-anchor (ee-esfile (concat stem ".e")) rest))
   )
 
+;; «ee-use-find-angg-es-remote»  (to ".ee-use-find-angg-es-remote")
 (defun ee-use-find-angg-es-remote ()
   (interactive)
   (defun find-angg (fname &rest rest)
@@ -188,6 +279,42 @@
 
 
 
+;;;  _                
+;;; | |   _   _  __ _ 
+;;; | |  | | | |/ _` |
+;;; | |__| |_| | (_| |
+;;; |_____\__,_|\__,_|
+;;;                   
+;; «lua»  (to ".lua")
+
+;; «ee-use-lua»  (to ".ee-use-lua")
+(defun ee-use-lua ()
+  (interactive)
+  (defun eepitch-lua51 () (interactive) (eepitch-comint "lua51" "lua5.1"))
+  (defun eepitch-lua51 () (interactive) (eepitch-comint "lua52" "lua5.2"))
+  )
+
+;; «ee-use-lua-exe»  (to ".ee-use-lua-exe")
+(defun ee-use-lua-exe ()
+  (interactive)
+  (defun eepitch-lua51 () (interactive) (eepitch-comint "lua52.exe" "~/bin/lua52.exe -i"))
+  (defun eepitch-lua52 () (interactive) (eepitch-comint "lua52.exe" "~/bin/lua52.exe -i"))
+  )
+
+
+
+
+;;;  _   _ _       _           _                _ 
+;;; | | | (_) __ _| |__       | | _____   _____| |
+;;; | |_| | |/ _` | '_ \ _____| |/ _ \ \ / / _ \ |
+;;; |  _  | | (_| | | | |_____| |  __/\ V /  __/ |
+;;; |_| |_|_|\__, |_| |_|     |_|\___| \_/ \___|_|
+;;;          |___/                                
+;;
+;; «high-level»  (to ".high-level")
+;; High-level configuration functions that run many low-level configs.
+;; See: (find-windows-beginner-intro "7.1. `ee-use-windows'")
+;;
 ;; «ee-use-windows»  (to ".ee-use-windows")
 ;; «ee-use-gnu-linux»  (to ".ee-use-gnu-linux")
 ;; «ee-use-gnu-linux-but-simulate»  (to ".ee-use-gnu-linux-but-simulate")
@@ -196,48 +323,52 @@
   (interactive)
   (ee-use-bullets)
   (ee-use-eshell)
-  (delete-file eshell-aliases-file)	; workaround for a bug
-  (eshell/alias "wget"          "~/bin/wget.exe $*")
-  (setq ee-wget-program         "~/bin/wget.exe")
+  (ee-use-wget-exe)
+  (ee-use-lua-exe)
   (setq ee-pdftotext-program    "~/bin/pdftotext.exe")
   (setq ee-firefox-program      "$FIREFOXDIR/firefox.exe")
   (setq ee-googlechrome-program "$GOOGLECHROMEDIR/chrome.exe")
   (setq ee-mpv-program          "$MPVDIR/mpv.exe")
-  (defalias 'find-pdf-page 'find-googlechrome-page)
   (ee-use-find-angg-es-remote)
-  ;; (ee-use-find-youtube-video)
+  (ee-use-googlechrome)
   (ee-use-youtube-videos)
   )
 
+;; This sort of reverts what `ee-use-windows' does.
+;;
 (defun ee-use-gnu-linux ()
   (interactive)
   (ee-use-red-stars)
   (ee-use-shell)
-  (delete-file eshell-aliases-file)
-  (eshell/alias "wget"          "wget $*")
-  (setq ee-wget-program         "wget")
+  (ee-use-wget)
+  (ee-use-lua)
   (setq ee-pdftotext-program    "pdftotext")
   (setq ee-firefox-program      "firefox")
   (setq ee-googlechrome-program "google-chrome")
   (setq ee-mpv-program          "mpv")
   (ee-use-find-angg-es-local)
-  ;; (ee-use-find-eevvideo-links)
+  (ee-use-googlechrome)
+  (defalias 'find-pdf-page 'find-xpdf-page)
   (ee-use-local-videos)
   )
 
+;; I use this to make the Emacs in my Debian box behave similarly to
+;; an Emacs on M$ Windows after running `ee-use-windows'. "Similarly"
+;; here means "similarly enough to let me test most of the settings
+;; of `ee-use-windows' and record demos".
+;;
 (defun ee-use-gnu-linux-but-simulate ()
   (interactive)
   (ee-use-bullets)
   (ee-use-eshell)
-  (delete-file eshell-aliases-file)
-  (eshell/alias "wget"          "wget $*")
-  (setq ee-wget-program         "wget")
+  (ee-use-wget)
+  (ee-use-lua)
   (setq ee-pdftotext-program    "pdftotext")
   (setq ee-firefox-program      "firefox")
   (setq ee-googlechrome-program "google-chrome")
   (setq ee-mpv-program          "mpv")
   (ee-use-find-angg-es-remote)
-  ;; (ee-use-find-youtube-video)
+  (ee-use-googlechrome)
   (ee-use-youtube-videos)
   )
 
