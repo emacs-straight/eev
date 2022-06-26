@@ -24,7 +24,7 @@
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-readme.el>
 ;;       htmlized: <http://angg.twu.net/eev-current/eev-readme.el.html>
-;;       See also: <http://angg.twu.net/eev-current/eev-readme.el.html>
+;;       See also: <http://angg.twu.net/eev-current/eev-beginner.el.html>
 ;;                 <http://angg.twu.net/eev-intros/find-eev-intro.html>
 ;;                 <http://angg.twu.net/eev-intros/find-eev-update-intro.html>
 ;;                                                (find-eev-intro)
@@ -32,6 +32,8 @@
 
 ;;; Commentary:
 
+;; THIS FILE IS OBSOLETE!
+;;
 ;; Until march/2019 this file was used by a few of the (many) ways of
 ;; loading eev; now it is totally obsolete, and it will be removed at
 ;; some point. See these for the current standard ways to install eev:
