@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20221229
+;; Version:    20230102
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://angg.twu.net/eev-current/eev-videolinks.el>
@@ -870,7 +870,7 @@ For more info on this particular video, run:
      :date    "2021dec01"
      :length  "2:26"
      :subs    ".vtt"
-     :comment "The first video about (find-saving-links-intro).")
+     :comment "An advanced video about (find-saving-links-intro).")
     ;;
     ;; «2021workshop2»  (to ".2021workshop2")
     ;; Play: (find-2021workshop2video "0:00")
@@ -883,7 +883,7 @@ For more info on this particular video, run:
      :date    "2021dec01"
      :length  "3:39"
      :subs    ".vtt"
-     :comment "The second video about (find-saving-links-intro).")
+     :comment "Another advanced video about (find-saving-links-intro).")
     ;;
     ;; «2021workshop3»  (to ".2021workshop3")
     ;; Play: (find-2021workshop3video "0:00")
@@ -895,7 +895,8 @@ For more info on this particular video, run:
      :page  "http://angg.twu.net/2021-workshop.html"
      :date    "2021dec03"
      :length  "18:22"
-     :comment "Very bad - don't watch!!!")
+     :subs    ".vtt"
+     :comment "A video on \"saving links to everything interesting\".")
     ;;
     ;; «2021workshop4»  (to ".2021workshop4")
     ;; Play: (find-2021workshop4video "0:00")
@@ -908,7 +909,7 @@ For more info on this particular video, run:
      :date    "2021dec04"
      :length  "5:42"
      :subs    ".vtt"
-     :comment "The second video about (find-saving-links-intro).")
+     :comment "How to create links to sections of intros.")
     ;;
     ;; «2021workshop5»  (to ".2021workshop5")
     ;; Play: (find-2021workshop5video "0:00")
@@ -920,7 +921,7 @@ For more info on this particular video, run:
      :page  "http://angg.twu.net/2021-workshop.html"
      :date    "2021dec04"
      :length  "8:50"
-     :comment "Very bad - don't watch!!!")
+     :comment "This video explains how to read some diagrams.")
     ;;
     ;; «2021workshop6»  (to ".2021workshop6")
     ;; Play: (find-2021workshop6video "0:00")
@@ -932,7 +933,8 @@ For more info on this particular video, run:
      :page  "http://angg.twu.net/2021-workshop.html"
      :date    "2021dec04"
      :length  "10:08"
-     :comment "Very bad - don't watch!!!")
+     :subs    ".vtt"
+     :comment "Some exercises on how to use `M-h M-e'.")
     ;;
     ;; «2021orgfornonusers»  (to ".2021orgfornonusers")
     ;; Play: (find-2021orgfornonusersvideo "0:00")
@@ -969,6 +971,7 @@ For more info on this particular video, run:
      :page  "http://angg.twu.net/eev-make.html"
      :date    "2022jan04"
      :length  "6:43"
+     :subs    ".vtt"
      :comment "How to use test blocks in weird places. Unrehearsed.")
     ;;
     ;; «2022findeevangg»  (to ".2022findeevangg")
@@ -1059,6 +1062,7 @@ For more info on this particular video, run:
      :page  "http://angg.twu.net/find-yttranscript-links.html"
      :date    "2022oct20"
      :length  "28:28"
+     :subs    ".vtt"
      :comment "A video about `find-yttranscript-links'.")
     ;;
     ;; «2022tikz»  (to ".2022tikz")
