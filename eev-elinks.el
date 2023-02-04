@@ -19,16 +19,16 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20230107
+;; Version:    20230127
 ;; Keywords:   e-scripts
 ;;
-;; Latest version: <http://angg.twu.net/eev-current/eev-elinks.el>
-;;       htmlized: <http://angg.twu.net/eev-current/eev-elinks.el.html>
-;;       See also: <http://angg.twu.net/eev-current/eev-beginner.el.html>
-;;                 <http://angg.twu.net/eev-intros/find-eev-intro.html>
-;;                 <http://angg.twu.net/eev-intros/find-links-intro.html>
-;;                                                (find-eev-intro)
-;;                                                (find-links-intro)
+;; Latest version: <http://anggtwu.net/eev-current/eev-elinks.el>
+;;       htmlized: <http://anggtwu.net/eev-current/eev-elinks.el.html>
+;;       See also: <http://anggtwu.net/eev-current/eev-beginner.el.html>
+;;                 <http://anggtwu.net/eev-intros/find-eev-intro.html>
+;;                 <http://anggtwu.net/eev-intros/find-links-intro.html>
+;;                                               (find-eev-intro)
+;;                                               (find-links-intro)
 
 ;;; Commentary:
 
@@ -524,8 +524,8 @@ This is an internal function used by `find-ekey-links' and
 ;; (find-eev "eev-mode.el" "eev-mode-map-set" "\\M-h\\M-i")
 ;;
 ;; See:
-;; (find-eev "eev-hlinks.el" "ee-fhl-main-program")
-;; (find-eev "eev-hlinks.el" "ee-fhl-main-program" "(ee-find-info-links)")
+;; (find-eev "eev-hlinks.el" "hprog")
+;; (find-eev "eev-hlinks.el" "hprog" "(ee-find-info-links)")
 ;; (find-eev-quick-intro "10.2. Generating short hyperlinks to info nodes")
 
 (defvar ee-info-file "")
@@ -632,7 +632,7 @@ This can be used to test if the current buffer is an intro buffer."
 (defun ee-find-intro-links (&optional stem)
   (setq stem (or stem (ee-intro-stem)))
   (let ((find-xxx-intro (ee-intern "find-%s-intro" stem))
-	(url (format "http://angg.twu.net/eev-intros/find-%s-intro.html" stem)))
+	(url (format "http://anggtwu.net/eev-intros/find-%s-intro.html" stem)))
     `(,(ee-H url)
       (,find-xxx-intro)
       )))
@@ -1281,6 +1281,7 @@ If D is t then try to use `ee-package-dir' to get the directory."
     (ee-template0 "\
 # (find-epackages '{pkg})
 # (find-epackage-links '{pkg})
+# (find-epackages '{pkg})
 # (find-epackage '{pkg})
 {findelpafiles}
 
@@ -1301,6 +1302,7 @@ If D is t then try to use `ee-package-dir' to get the directory."
 # (package-delete (ee-package-desc '{pkg}))
 
 # (find-epackage-links '{pkg} \"{c}\" t)
+# (find-epackages      '{pkg})
 # (find-epackage       '{pkg})
 # (code-c-d \"{c}\" \"{d}\")
 # (find-{c}file \"\")
@@ -1531,6 +1533,7 @@ Convert PKG - a symbol - to a package-desc structure (or to nil)."
      (find-efunction-links ',mode)
      (find-efunctiondescr  ',mode)
      (find-efunction       ',mode)
+     (find-hvariable ,(concat mode "-map"))
      ""
      (find-estring (documentation ',mode))
      (find-estring (documentation ',mode t))
@@ -1563,6 +1566,8 @@ Convert PKG - a symbol - to a package-desc structure (or to nil)."
      (find-eppp (--filter (and (boundp it) (symbol-value it)) minor-mode-list))
      (find-elinks (--map `(find-efunctiondescr ',it) minor-mode-list))
      (find-elinks (--map `(find-efunction ',it) minor-mode-list))
+     (find-node "(dash)")
+     (find-node "(dash)Index")
      ""
      (find-elnode "Active Keymaps")
      (find-elnode "Standard Keymaps")
@@ -1572,6 +1577,7 @@ Convert PKG - a symbol - to a package-desc structure (or to nil)."
      (find-elnode "Controlling Active Maps" "minor-mode-key-binding")
      (find-eppp (current-minor-mode-maps))
      (find-eppp minor-mode-map-alist)
+     (find-eppp (mapcar 'car minor-mode-map-alist))
      (find-eppp (-map 'car minor-mode-map-alist))
      ""
      (find-efunctiondescr 'define-minor-mode)
@@ -1902,8 +1908,8 @@ You can use this to understand how the mode line works."
 ;; [To do: explain M-h M-y. There's an example in `eesteps' format in
 ;; the NEWS file.]
 
-;; See: <http://angg.twu.net/eev-current/README.html>
-;; and: <http://angg.twu.net/eev-current/NEWS.html>
+;; See: <http://anggtwu.net/eev-current/README.html>
+;; and: <http://anggtwu.net/eev-current/NEWS.html>
 
 ;; The second part of this file contains some older functions that
 ;; insert Elisp hyperlinks at the current buffer -- like `inn', that

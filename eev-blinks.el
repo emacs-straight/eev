@@ -2,7 +2,7 @@
 ;; The basic hyperlinks are the ones that do not depend on templates,
 ;; and that are not created by `code-c-d' and friends.
 
-;; Copyright (C) 1999-2022 Free Software Foundation, Inc.
+;; Copyright (C) 1999-2023 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -21,13 +21,13 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20221216
+;; Version:    20230127
 ;; Keywords:   e-scripts
 ;;
-;; Latest version: <http://angg.twu.net/eev-current/eev-blinks.el>
-;;       htmlized: <http://angg.twu.net/eev-current/eev-blinks.el.html>
-;;       See also: <http://angg.twu.net/eev-current/eev-beginner.el.html>
-;;                 <http://angg.twu.net/eev-intros/find-eev-intro.html>
+;; Latest version: <http://anggtwu.net/eev-current/eev-blinks.el>
+;;       htmlized: <http://anggtwu.net/eev-current/eev-blinks.el.html>
+;;       See also: <http://anggtwu.net/eev-current/eev-beginner.el.html>
+;;                 <http://anggtwu.net/eev-intros/find-eev-intro.html>
 ;;                                                (find-eev-intro)
 
 ;;; Commentary:
@@ -614,6 +614,14 @@ properties to omit."
 				collect (list x y))
 	   collect (cons s (ee-sort-pairs pairs))))
 
+(defun ee-symbol< (symbol1 symbol2)
+  (string< (symbol-name symbol1) (symbol-name symbol2)))
+
+;; Tests: (find-eppp global-minor-modes)
+;;        (find-eppp (ee-sort-symbols global-minor-modes))
+(defun ee-sort-symbols (symbols)
+  (sort symbols 'ee-symbol<))
+
 (defun ee-sort-pairs (pairs)
   "Sort a list of PAIRS of the the form (symbol value)."
   (let ((pair< (lambda (pair1 pair2)
@@ -930,6 +938,7 @@ newlines, as \"big strings\". This is a bit childish, I know..."
 ;; Test:
 ;;
 ;;   (find-epp (macroexpand ' (cl-defstruct mypoint x y) ))
+;;   (find-eppm             ' (cl-defstruct mypoint x y) )
 ;;  
 ;;   (cl-defstruct mypoint x y)
 ;;   (cl-defstruct (mypoint-colored (:include point)) color)
@@ -1213,8 +1222,8 @@ it doesn't convert relative filenames into urls. See
 
 
 ;; «find-eww»  (to ".find-eww")
-;; Tests: (find-eww "http://angg.twu.net/")
-;;        (find-eww "http://angg.twu.net/" "Welcome")
+;; Tests: (find-eww "http://anggtwu.net/")
+;;        (find-eww "http://anggtwu.net/" "Welcome")
 ;;        (find-eww "/tmp/")
 ;;
 (defvar ee-find-eww-search-yes nil)

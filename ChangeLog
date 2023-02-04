@@ -1,3 +1,66 @@
+2023-01-27  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-intro.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-blinks.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-elinks.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-hlinks.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-plinks.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-tlinks.el: changed angg.twu.net to anggtwu.net.
+
+	* eev-testblocks.el (ee-insert-test-raku-mode): also use
+	eepitch-shell.
+
+2023-01-25  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-elinks.el (ee-find-epackage-links0): use `find-epackages'.
+
+2023-01-21  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eepitch.el (eepitch-raku): new function.
+
+	* eev-testblocks.el (ee-insert-test-raku-mode): new function.
+
+2023-01-18  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-tlinks.el (find-try-sly-links): rewrote several parts.
+
+2023-01-17  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (ee-symbol<): new function.
+	(ee-sort-symbols): new function.
+
+2023-01-16  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-hlinks.el (ee-efunctiondescr-re): recognize built-in
+	functions.
+	(ee-hprog-find-here-links, ee-hlang-sexp1-result)
+	(ee-hlang-sexp1, ee-hlang-sexp2): new variables.
+	(ee-hlang-eval, ee-hlang-:lisp, ee-hlang-:or, ee-hlang-:if)
+	(ee-hlang-run): new functions.
+	(ee-detect-here): rewritten to use `ee-hlang-run' and
+	`ee-hprog-find-here-links'.
+	(ee-find-here-links): same.
+	(ee-find-here-debug-links): same.
+	(ee-fhl-main-program, ee-fhl-sexp1, ee-fhl-sexp2, ee-fhl-run)
+	(ee-fhl-eval, ee-fhl-:eval, ee-fhl-:if, ee-fhl-:or): all these
+	variables and functions were deleted and replaced by the ones that
+	have "hprog" and "hlang" in their names, that have better names,
+	docstrings, and tests.
+
+2023-01-14  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-rstdoc.el (ee-rstdoc-:clhs): new variable.
+
+2023-01-11  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-rstdoc.el (ee-rstdoc-htm): new function.
+	(ee-rstdoc-html, ee-rstdoc-web): use `ee-rstdoc-htm'.
+
 2023-01-10  Eduardo Ochs  <eduardoochs@gmail.com>
 
 	* eev-tlinks.el (find-try-sly-links): new function.

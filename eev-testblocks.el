@@ -1,6 +1,6 @@
 ;;; eev-testblocks.el - create "test blocks" using multiline comments.  -*- lexical-binding: nil; -*-
 
-;; Copyright (C) 2019-2022 Free Software Foundation, Inc.
+;; Copyright (C) 2019-2023 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,16 +19,16 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20221101
+;; Version:    20230127
 ;; Keywords:   e-scripts
 ;;
-;; Latest version: <http://angg.twu.net/eev-current/eev-testblocks.el>
-;;       htmlized: <http://angg.twu.net/eev-current/eev-testblocks.el.html>
-;;       See also: <http://angg.twu.net/eev-current/eev-beginner.el.html>
-;;                 <http://angg.twu.net/eev-intros/find-eev-intro.html>
-;;                 <http://angg.twu.net/eev-intros/find-links-intro.html>
-;;                                                (find-eev-intro)
-;;                                                (find-links-intro)
+;; Latest version: <http://anggtwu.net/eev-current/eev-testblocks.el>
+;;       htmlized: <http://anggtwu.net/eev-current/eev-testblocks.el.html>
+;;       See also: <http://anggtwu.net/eev-current/eev-beginner.el.html>
+;;                 <http://anggtwu.net/eev-intros/find-eev-intro.html>
+;;                 <http://anggtwu.net/eev-intros/find-links-intro.html>
+;;                                               (find-eev-intro)
+;;                                               (find-links-intro)
 
 ;;; Commentary:
 
@@ -37,8 +37,8 @@
 ;;
 ;;   (find-eepitch-intro "3. Test blocks")
 ;;   (find-eepitch-intro "3.1. `find-eeit-links'")
-;;   http://angg.twu.net/emacsconf2021.html
-;;   http://angg.twu.net/LATEX/2021emacsconf.pdf
+;;   http://anggtwu.net/emacsconf2021.html
+;;   http://anggtwu.net/LATEX/2021emacsconf.pdf
 
 ;; «.eeit»			(to "eeit")
 ;; «.ee-insert-test»		(to "ee-insert-test")
@@ -308,6 +308,27 @@ exec(open(\"%s\").read(), globals())
 
 |#
 " (buffer-name)))))
+
+(defun ee-insert-test-raku-mode ()
+  (interactive)
+  (let ((libname
+	 (replace-regexp-in-string
+	  "\\.rakumod$" "" (buffer-name))))
+    (insert (ee-adjust-red-stars (format "
+#`(
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+raku %s
+
+ (eepitch-raku)
+ (eepitch-kill)
+ (eepitch-raku)
+use lib '.'
+use %s
+
+)
+" (buffer-name) libname)))))
 
 (defun ee-insert-test-ruby-mode ()
   (interactive)

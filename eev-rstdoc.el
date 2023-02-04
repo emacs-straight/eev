@@ -1,6 +1,6 @@
 ;;; eev-rstdoc.el -- links to documentation generated from RST files.  -*- lexical-binding: nil; -*-
 
-;; Copyright (C) 2022 Free Software Foundation, Inc.
+;; Copyright (C) 2022-2023 Free Software Foundation, Inc.
 ;;
 ;; This file is part of GNU eev.
 ;;
@@ -19,13 +19,13 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20221204
+;; Version:    20230127
 ;; Keywords:   e-scripts
 ;;
-;; Latest version: <http://angg.twu.net/eev-current/eev-rstdoc.el>
-;;       htmlized: <http://angg.twu.net/eev-current/eev-rstdoc.el.html>
-;;       See also: <http://angg.twu.net/eev-current/eev-beginner.el.html>
-;;                 <http://angg.twu.net/eev-intros/find-eev-intro.html>
+;; Latest version: <http://anggtwu.net/eev-current/eev-rstdoc.el>
+;;       htmlized: <http://anggtwu.net/eev-current/eev-rstdoc.el.html>
+;;       See also: <http://anggtwu.net/eev-current/eev-beginner.el.html>
+;;                 <http://anggtwu.net/eev-intros/find-eev-intro.html>
 ;;                                                (find-eev-intro)
 
 ;; «.introduction»		(to "introduction")
@@ -33,6 +33,8 @@
 ;;   «.ee-rstdoc-:py»		(to "ee-rstdoc-:py")
 ;;   «.ee-rstdoc-:sympy»	(to "ee-rstdoc-:sympy")
 ;;   «.ee-rstdoc-:mpl»		(to "ee-rstdoc-:mpl")
+;; «.other-defvars»		(to "other-defvars")
+;;   «.ee-rstdoc-:clhs»		(to "ee-rstdoc-:clhs")
 ;; «.basic-ops»			(to "basic-ops")
 ;; «.around-point»		(to "around-point")
 ;; «.code-rstdoc»		(to "code-rstdoc")
@@ -51,9 +53,9 @@
 ;; and there's a video about eev-rstdoc.el:
 ;;
 ;;   Title: Short hyperlinks to Python docs (eev @ EmacsConf2022)
-;;   MP4:   http://angg.twu.net/eev-videos/emacsconf2022-py.mp4
+;;   MP4:   http://anggtwu.net/eev-videos/emacsconf2022-py.mp4
 ;;   YT:    http://www.youtube.com/watch?v=QeqCYQSlz-I
-;;   Page:  http://angg.twu.net/emacsconf2022-py.html
+;;   Page:  http://anggtwu.net/emacsconf2022-py.html
 ;;   Comment: A video about eev-rstdoc.el.
 ;;   Date:    2022dec04
 ;;   Length:  14:03
@@ -68,7 +70,7 @@
 ;; I'm still cleaning it up, and I'll give a presentation
 ;; about it in the EmacsConf2022:
 ;;
-;;   http://angg.twu.net/emacsconf2022-py.html
+;;   http://anggtwu.net/emacsconf2022-py.html
 ;;
 ;; See also these posts in the mailing list:
 ;;
@@ -161,9 +163,9 @@
 ;;
 ;;   (find-es "python" "tut-strings")
 ;;   (find-es "sympy" "tutorial")
-;;   http://angg.twu.net/e/python.e.html#tut-strings
-;;   http://angg.twu.net/e/sympy.e.html#tutorial
-;;   http://angg.twu.net/eepitch.html#tutorials
+;;   http://anggtwu.net/e/python.e.html#tut-strings
+;;   http://anggtwu.net/e/sympy.e.html#tutorial
+;;   http://anggtwu.net/eepitch.html#tutorials
 ;;
 ;;
 ;; 3. How this works
@@ -316,6 +318,43 @@
       "See: (find-code-rstdoc :mpl)")
 
 
+;;;   ___  _   _                     _       __                     
+;;;  / _ \| |_| |__   ___ _ __    __| | ___ / _|_   ____ _ _ __ ___ 
+;;; | | | | __| '_ \ / _ \ '__|  / _` |/ _ \ |_\ \ / / _` | '__/ __|
+;;; | |_| | |_| | | |  __/ |    | (_| |  __/  _|\ V / (_| | |  \__ \
+;;;  \___/ \__|_| |_|\___|_|     \__,_|\___|_|   \_/ \__,_|_|  |___/
+;;;                                                                 
+;; «other-defvars»  (to ".other-defvars")
+
+;; «ee-rstdoc-:clhs»  (to ".ee-rstdoc-:clhs")
+;; The Common Lisp Hyperspec.
+;; The Debian package "hyperspec" installs a local copy
+;; of the CLHS in /usr/share/doc/hyperspec/. To use this,
+;; put these two lines in your ~/.emacs:
+;;
+;; ;; (find-code-rstdoc :clhs)
+;;         (code-rstdoc :clhs)
+;;
+(defvar ee-rstdoc-:clhs
+      '(:base      "Front/Contents"
+        :base-web  "http://clhs.lisp.se/"
+	           ;; "http://www.lispworks.com/documentation/HyperSpec/"
+        :base-html "file:///usr/share/doc/hyperspec/"
+        :base-rst  "/BASE-RST/"
+        :rst       ".rst"
+        :htm       ".htm"
+        :res       ("#.*$" "\\?.*$" ".html?$" ".txt$" ".rst$" "^file://"
+		    "http://clhs.lisp.se/"
+		    "http://www.lispworks.com/documentation/HyperSpec/"
+		    "http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/html/hyperspec/HyperSpec/"
+		    "http://www.ai.mit.edu/projects/iiip/doc/CommonLISP/HyperSpec/"
+		    "/usr/share/doc/hyperspec/")
+        :kill      clk
+	)
+      "See: (find-code-rstdoc :clhs)")
+
+
+
 ;;;  ____            _                        
 ;;; | __ )  __ _ ___(_) ___    ___  _ __  ___ 
 ;;; |  _ \ / _` / __| |/ __|  / _ \| '_ \/ __|
@@ -384,20 +423,25 @@
 	  (ee-rstdoc-stem kw str)
 	  (ee-rstdoc-hashanchor str)))
 
+(defun ee-rstdoc-htm (kw)
+  (or (ee-rstdoc-getfield0 kw :htm) ".html"))
+
 (defun ee-rstdoc-html (kw &optional str)
   (if (not str)
       (setq str (ee-rstdoc-getfield kw :base)))
-  (format "%s%s.html%s"
+  (format "%s%s%s%s"
 	  (ee-rstdoc-getfield kw :base-html)
 	  (ee-rstdoc-stem kw str)
+	  (ee-rstdoc-htm kw)
 	  (ee-rstdoc-hashanchor str)))
 
 (defun ee-rstdoc-web (kw &optional str)
   (if (not str)
       (setq str (ee-rstdoc-getfield kw :base)))
-  (format "%s%s.html%s"
+  (format "%s%s%s%s"
 	  (ee-rstdoc-getfield kw :base-web)
 	  (ee-rstdoc-stem kw str)
+	  (ee-rstdoc-htm kw)
 	  (ee-rstdoc-hashanchor str)))
 
 (defun ee-rstdoc-rst (kw &optional str)
