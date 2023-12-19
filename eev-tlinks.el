@@ -157,7 +157,7 @@
 ;; «.find-emacsclient-links»		(to "find-emacsclient-links")
 ;; «.find-show2-links»			(to "find-show2-links")
 ;;   «.show2»				(to "show2")
-;;   «.code-show2»			(to "code-show2")
+;; «.show2-use»				(to "show2-use")
 ;;   «.find-luatb»			(to "find-luatb")
 ;; «.code-brappend»			(to "code-brappend")
 ;; «.find-maximamsg-links»		(to "find-maximamsg-links")
@@ -3313,7 +3313,8 @@ For more info on this particular video, run:
 ;;        (find-psne-1stclassvideo-links \"{c}\")
 ;;    or: (find-psne-eevvideo-links \"{mp4stem}\" \"{exts}\")
 ;;
-;; LSubs: (find-1stclassvideolsubs \"{c}\")\n"))
+;; LSubs: (find-{c}lsubs \"00:00\")
+;;        (find-1stclassvideolsubs \"{c}\")\n"))
     (if mp4found
 	(if hassubs
 	    (ee-template0 template11)
@@ -4330,8 +4331,7 @@ emacsclient --eval '(find-livesofanimalspage 3)'
        ""
        ,(ee-template0 "\
  (find-angg \"LUA/Show2.lua\" \"texbody\")
- (find-code-show2 \"{texfile}\")
-       (code-show2 \"{texfile}\")
+ (show2-use \"{texfile}\")
  (eepitch-lua51)
  (eepitch-kill)
  (eepitch-lua51)
@@ -4377,39 +4377,70 @@ printmeaning \"@oddfoot\"
   (find-2a nil '(find-show2-links fname0)))
 
 
-;; «code-show2»  (to ".code-show2")
-;; Skel:  (find-code-xxx-links "show2" "fname0" "")
-;; Tests: (find-code-show2)
-;;        (find-code-show2 "./foo")
-;;        (find-code-show2 "/tmp/")
-;;        (find-code-show2 "./foo.tex")
-;; See:   (find-angg "LUA/Show2.lua")
-;;        (find-angg "LUA/Show2.lua" "Show")
-;;
-(defun      code-show2 (&optional fname0)
-  (eval (ee-read      (ee-code-show2 fname0))))
-(defun find-code-show2 (&optional fname0)
+
+;;;      _                   ____                      
+;;;  ___| |__   _____      _|___ \      _   _ ___  ___ 
+;;; / __| '_ \ / _ \ \ /\ / / __) |____| | | / __|/ _ \
+;;; \__ \ | | | (_) \ V  V / / __/_____| |_| \__ \  __/
+;;; |___/_| |_|\___/ \_/\_/ |_____|     \__,_|___/\___|
+;;;                                                    
+;; «show2-use»  (to ".show2-use")
+;; See: (find-show2-intro "3. Show2.lua")
+;;      (find-show2-intro "3. Show2.lua" "show2-use")
+
+(defun show2-use (&optional fname0)
+  "Run two `setenv's and show explanations in the right window."
   (interactive)
-  (find-estring-elisp (ee-code-show2 fname0)))
-(defun   ee-code-show2 (&optional fname0)
-  (let* ((fname (ee-expand (or fname0 "/tmp/Show2.tex")))
-	 (dir   (file-name-directory fname))
-	 (stem0 (file-name-nondirectory
-		 (file-name-sans-extension fname)))
-	 (stem  (if (equal stem0 "") "Show2" stem0))
-	 (tex   (concat stem ".tex"))
-	 (pdf   (concat stem ".pdf"))
-	 (cmd   (format "cd %s && lualatex %s.tex < /dev/null" dir stem)))
-    (ee-template0 "\
-;; (find-code-show2 \"{fname}\")
-;;      (code-show2 \"{fname}\")
-;;  (find-efunction 'code-show2)
-;;
-;;
+  (eval (ee-read (ee-show2-use fname0)))
+  (find-2a nil `(find-show2-use ,fname0))
+  `("SHOW2DIR"  -> ,(getenv "SHOW2DIR")
+    "SHOW2STEM" -> ,(getenv "SHOW2STEM")))
+
+(defun find-show2-use (&optional fname0 &rest pos-spec-list)
+  "An internal function used by `show2-use'."
+  (interactive)
+  (apply 'find-estring-elisp
+	 (ee-show2-use fname0)
+	 pos-spec-list))
+
+(defmacro ee-show2-do-with-fname0 (fname0 &rest code)
+  "An internal function used by `show2-use'."
+  `(let* ((fname0 ,fname0)
+	  (fname (ee-expand (or fname0 "/tmp/Show2.tex")))
+	  (dir   (file-name-directory fname))
+	  (stem0 (file-name-nondirectory
+		  (file-name-sans-extension fname)))
+	  (stem  (if (equal stem0 "") "Show2" stem0))
+	  (tex   (concat stem ".tex"))
+	  (pdf   (concat stem ".pdf"))
+	  (cmd   (format "cd %s && lualatex %s.tex < /dev/null" dir stem)))
+     ,@code))
+
+(defun ee-show2-use (&optional fname0)
+  "An internal function used by `show2-use'."
+  (ee-show2-do-with-fname0
+   fname0
+   (ee-template0 "\
+;; (find-show2-use {(ee-S fname0)})
+;;      (show2-use {(ee-S fname0)})
+;; (find-efunction 'show2-use)
+
 ;; Part 1: Lua
 ;; ===========
-;; With the arguments above `code-show2' will set the
-;; environment variables SHOW2DIR and SHOW2STEM to:
+;; With the argument above `show2-use' will set its local
+;; variables to:
+;;
+;;   Arg1:  fname0 -> {(ee-S fname0)}
+;;   Vars:   fname -> {(ee-S fname)}
+;;             dir -> {(ee-S dir)}
+;;           stem0 -> {(ee-S stem0)}
+;;            stem -> {(ee-S stem)}
+;;             tex -> {(ee-S tex)}
+;;             pdf -> {(ee-S pdf)}
+;;             cmd -> {(ee-S cmd)}
+;;
+;; and it will set the environment variables SHOW2DIR and
+;; SHOW2STEM to:
 ;;
 (setenv \"SHOW2DIR\"  \"{dir}\")
 (setenv \"SHOW2STEM\" \"{stem}\")
@@ -4424,33 +4455,8 @@ printmeaning \"@oddfoot\"
 ;; and will run this command to compile that .tex:
 ;;
 ;;   {cmd}
-;;
-;; When both SHOW2DIR and SHOW2STEM are undefined Show2.lua
-;; will use /tmp/ and /tmp/Show2.tex.
-;;
-;; To understand how the argument to `code-show2' works, try:
-;;        (find-code-show2)
-;;        (find-code-show2 \"DIR/STEM.ext\")
-;;        (find-code-show2 \"/tmp/Show2.pdf\")
-;;        (find-code-show2 \"/tmp/Show2.tex\")
-;;        (find-code-show2 \"~/LATEX/Foo.tex\")
-;; Arg1:  fname0 -> {(ee-S fname0)}
-;; Vars:   fname -> {(ee-S fname)}
-;;           dir -> {(ee-S dir)}
-;;         stem0 -> {(ee-S stem0)}
-;;          stem -> {(ee-S stem)}
-;;           tex -> {(ee-S tex)}
-;;           pdf -> {(ee-S pdf)}
-;;           cmd -> {(ee-S cmd)}
-;;
-;; The logic is here:
-;;   (find-efunction    'code-show2)
-;;   (find-efunction 'ee-code-show2)
-;;   (find-angg \"LUA/Show2.lua\" \"Show\")
-;;   (find-angg \"LUA/Show2.lua\" \"texbody\")
-;;   (find-angg \"LUA/Show2.lua\" \"Dang\")
-;;
-;;
+
+
 ;; Part 2: Emacs
 ;; =============
 ;; Eepitch-ing a line like this one
@@ -4475,6 +4481,7 @@ printmeaning \"@oddfoot\"
 (defun D   () (interactive) (find-pdf-page \"{dir}{stem}.pdf\"))
 (defun etv () (interactive) (find-wset \"13o2_o_o\" '(tb) '(v)))
 ")))
+
 
 
 
