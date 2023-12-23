@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20231219
+;; Version:    20231221
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://anggtwu.net/eev-current/eev-tlinks.el>
@@ -90,6 +90,7 @@
 ;;
 ;; «.find-debpkg-links»			(to "find-debpkg-links")
 ;; «.find-pacman-links»			(to "find-pacman-links")
+;; «.find-macports-links»		(to "find-macports-links")
 ;; «.find-homebrew-links»		(to "find-homebrew-links")
 ;; «.find-eev-install-links»		(to "find-eev-install-links")
 ;; «.find-eev-update-links»		(to "find-eev-update-links")
@@ -408,7 +409,9 @@ This is an internal function used by `find-{stem}-links'.\"
      ,(concat       ";; Skel: " (ee-S `(find-find-links-links-new ,stem ,args ,vars)))
      ,(ee-template0 ";; Test: (find-{stem}-links)")
      ";;"
-     ,(ee-ffll-defun stem args vars)
+     ,(ee-ffll-defun   stem args vars)
+     ""
+     ,(ee-ffll-deftest stem args vars)
      )
    pos-spec-list))
 
@@ -505,6 +508,20 @@ This is an internal function used by `find-{stem}-links'.\"
   (if (equal vars "") (setq vars nil))
   (if vars (ee-ffll-defun-with-lets stem args vars)
      (ee-ffll-defun-without-lets stem args)))
+
+(defun ee-ffll-deftest (stem args &optional vars)
+  (ee-template0 "\
+;; A function to test changes in the template of `find-{stem}-links'.
+;; To use it type `M-x tt' inside the `(defun find-{stem}-links ...)'.
+;; See: (find-enode \"Lisp Eval\" \"eval-defun\" \"C-M-x\" \"containing\")
+;;
+(defun ee-template-test (&rest args)
+  (let ((ee-buffer-name \"*ee-template-test*\"))
+    (find-2a nil `(find-{stem}-links ,@args))))
+
+(defun tt0 () (interactive) (eek \"C-M-x\") (ee-template-test))
+(defun tt  () (interactive) (eek \"C-M-x\") (ee-template-test \"A\" \"B\"))
+"))
 
 
 
@@ -772,6 +789,50 @@ sudo pacman -S {pkg}
 
 
 
+;;;  __  __            ____            _       
+;;; |  \/  | __ _  ___|  _ \ ___  _ __| |_ ___ 
+;;; | |\/| |/ _` |/ __| |_) / _ \| '__| __/ __|
+;;; | |  | | (_| | (__|  __/ (_) | |  | |_\__ \
+;;; |_|  |_|\__,_|\___|_|   \___/|_|   \__|___/
+;;;                                            
+;; «find-macports-links»  (to ".find-macports-links")
+;; Skel: (find-find-links-links-new "macports" "pkg" "")
+;; Test: (find-macports-links)
+;;
+(defun find-macports-links (&optional pkg &rest pos-spec-list)
+"Visit a temporary buffer containing hyperlinks for macports."
+  (interactive)
+  (setq pkg (or pkg "{pkg}"))
+  (apply
+   'find-elinks
+   `((find-macports-links ,pkg ,@pos-spec-list)
+     ;; Convention: the first sexp always regenerates the buffer.
+     (find-efunction 'find-macports-links)
+     ""
+     ,(ee-template0 "\
+# (find-sh \"port contents {pkg}\")
+# (find-sh \"find /opt/local | grep {pkg} | sort\")
+# (find-sh \"port echo all | grep {pkg} | sort\")
+# (find-sh \"port echo installed\")
+# (find-sh \"port help echo\")
+# (find-sh \"port help contents\")
+# (find-sh \"port help provides\")
+# (find-sh \"port provides /opt/local/an/existing/file\")
+# (find-man \"1 port\")
+
+# https://ports.macports.org/port/{pkg}/
+
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+sudo port install {pkg}
+sudo brew install {pkg}
+")
+     )
+   pos-spec-list))
+
+
+
 ;;;  _   _                      _                       
 ;;; | | | | ___  _ __ ___   ___| |__  _ __ _____      __
 ;;; | |_| |/ _ \| '_ ` _ \ / _ \ '_ \| '__/ _ \ \ /\ / /
@@ -794,24 +855,15 @@ sudo pacman -S {pkg}
      (find-efunction 'find-homebrew-links)
      ""
      ,(ee-template0 "\
-# (find-sh \"port contents {pkg}\")
-# (find-sh \"find /opt/local | grep {pkg} | sort\")
-# (find-sh \"port echo all | grep {pkg} | sort\")
-# (find-sh \"port echo installed\")
-# (find-sh \"port help echo\")
-# (find-sh \"port help contents\")
-# (find-sh \"port help provides\")
-# (find-sh \"port provides /opt/local/an/existing/file\")
-# (find-man \"1 port\")
+# See:
+#   (find-macports-links \"{pkg}\")
 # https://formulae.brew.sh/formula/{pkg}
 # https://formulae.brew.sh/formula/lua@5.1#default
-# https://ports.macports.org/port/{pkg}/
 
  (eepitch-shell)
  (eepitch-kill)
  (eepitch-shell)
-sudo port install {pkg}
-sudo brew install {pkg}
+brew install {pkg}
 ")
      )
    pos-spec-list))
