@@ -144,6 +144,7 @@
 ;; «.find-1stclassvideodef»		(to "find-1stclassvideodef")
 ;; «.find-1stclassvideos»		(to "find-1stclassvideos")
 ;;   «.1c»				(to "1c")
+;;   «.aliases»				(to "aliases")
 ;; «.find-advicebefore-links»		(to "find-advicebefore-links")
 ;; «.find-osm-links»			(to "find-osm-links")
 ;; «.find-pip3-links»			(to "find-pip3-links")
@@ -1061,6 +1062,7 @@ git pull
 	 do (load modulename))
 
 
+(load user-init-file)
 (load \"~/.emacs\")
 (load \"~/.emacs.d/init.el\")
 ")
@@ -3451,18 +3453,15 @@ This function is used by `ee-0x0-upload-region'."
   "An internal function used by `find-1stclassvideo-links'."
   (ee-let*-macro-1stclassvideo-c
    c
-   (let* ((hsubsurl (if hsubs (ee-template0 ";; HSubs: {hsubs}\n") ""))
-	  (hsubs    (if hsubs
-			(ee-template0 ";; HSubs: (find-{c}hsubs \"{subsinit}\")\n")
-		      ""))
-	  (lsubs    (if hassubs
-			(ee-template0 ";; LSubs: (find-{c}lsubs \"{subsinit}\")\n")
-		      ""))
-	  (index    (if hasindex
-			(ee-template0 ";; Index: (find-1stclassvideo-index \"{c}\")\n")
-		      ""))
-	  (dlsubs   (ee-1stclassvideos-dlsubs c))
-	  )
+   (let* ((hsubsurl-t0 ";; HSubs: {hsubs}\n")
+	  (hsubs-t0    ";; HSubs: (find-{c}hsubs \"{subsinit}\")\n")
+	  (lsubs-t0    ";; LSubs: (find-{c}lsubs \"{subsinit}\")\n")
+	  (index-t0    ";; Index: (find-1stclassvideo-index \"{c}\")\n")
+	  (hsubsurl    (if hsubs    (ee-template0 hsubsurl-t0) ""))
+	  (hsubs       (if hsubs    (ee-template0 hsubs-t0)    ""))
+	  (lsubs       (if hassubs  (ee-template0 lsubs-t0)    ""))
+	  (index       (if hasindex (ee-template0 index-t0)    ""))
+	  (dlsubs      (ee-1stclassvideos-dlsubs c)))
      (ee-template0 "\
 ;; Title: {title}
 ;; MP4:   {mp4}
@@ -3603,6 +3602,7 @@ For more info on this particular video, run:
 	   rest)))
 
 ;; «1c»  (to ".1c")
+;; «aliases»  (to ".aliases")
 ;; Suggestion: put the aliases below in your init file.
 ;; (defalias '1c  'find-1stclassvideos)
 ;; (defalias '1cl 'find-1stclassvideo-links)
