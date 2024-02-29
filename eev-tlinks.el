@@ -1058,9 +1058,8 @@ git pull
   eejump
   eev-anchors
   eev-code eev-pdflike
-  eev-codings eev-env eev-edit eev-testblocks eev-kla eev-helpful eev-rstdoc
-  eev-kl-here
-  eev-qrl
+  eev-codings eev-env eev-edit eev-testblocks
+  eev-kla eev-kl-here eev-strange-functions eev-helpful eev-rstdoc eev-qrl
   eev-wconfig
   eev-audiovideo
   eev-videolinks
@@ -2418,7 +2417,7 @@ http://anggtwu.net/ are newer than the local copy."
   (let* ((dir         "$S/http/anggtwu.net/eev-videos/")
          (url- (concat "http://anggtwu.net/eev-videos/" stem))
          (f (lambda (ext) (format "wget -N   %s%s\n" url- ext)))
-         (wgets (mapconcat f (split-string exts))))
+         (wgets (mapconcat f (split-string exts) "")))
     (ee-template0 "\
 mkdir -p {dir}
 cd       {dir}
@@ -3498,7 +3497,7 @@ This function is used by `ee-0x0-upload-region'."
 ;; Tests: (find-estring (ee-1stclassvideo-basicinfo "eev2021"))
 ;;        (find-estring (ee-1stclassvideo-basicinfo "2021ssr"))
 ;;
-(defun ee-1stclassvideo-basicinfo (c)
+(defun ee-1stclassvideo-basicinfo (c &optional pos)
   (ee-let*-macro-1stclassvideo-c
    c
    (let* ((hsubsurl-t0 ";; HSubs: {hsubs}\n")
@@ -3529,7 +3528,7 @@ This function is used by `ee-0x0-upload-region'."
 	  (lsubs-sexp  (if hassubs  (ee-template0 lsubs-t0)    ""))
 	  (index-sexp  (if hasindex (ee-template0 index-t0)    "")))
      (ee-template0 "\
-;; Play:  (find-{c}video \"00:00\")
+;; Play:  (find-{c}video \"{init}\")
 {hsubs-sexp}\
 {lsubs-sexp}\
 {index-sexp}\
