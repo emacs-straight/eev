@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20240307
+;; Version:    20240512
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://anggtwu.net/eev-current/eev-tlinks.el>
@@ -181,6 +181,7 @@
 ;; «.find-gitdoc-links»			(to "find-gitdoc-links")
 ;; «.find-luainit-links»		(to "find-luainit-links")
 ;; «.find-luaso-links»			(to "find-luaso-links")
+;; «.find-subed-mpv-links»		(to "find-subed-mpv-links")
 
 
 (require 'eev-env)
@@ -5249,6 +5250,109 @@ print({funname}(42))
 ")
        )
      pos-spec-list)))
+
+
+
+
+;; «find-subed-mpv-links»  (to ".find-subed-mpv-links")
+;; Skel: (find-find-links-links-new "subed-mpv" "emacs-width" "ee-buffer-name")
+;; Test: (find-subed-mpv-links)
+;;
+(defun find-subed-mpv-links (&optional emacs-width &rest pos-spec-list)
+"Visit a temporary buffer containing hyperlinks for subed-mpv."
+  (interactive)
+  (setq emacs-width (or emacs-width 140))
+  (let* ((ee-buffer-name "*find-subed-mpv-links*"))
+    (apply
+     'find-elinks
+     `((find-subed-mpv-links ,emacs-width ,@pos-spec-list)
+       (find-subed-mpv-links "{emacs-width}")
+       (find-efunction 'find-subed-mpv-links)
+       (find-efunction 'ee-insert-test-subed-vtt-mode)
+       (find-eevfile "eev-testblocks.el" "ee-insert-test-subed-vtt-mode")
+       "# http://anggtwu.net/2024-find-subed-mpv-links.html"
+       ""
+       ,(ee-template0 "\
+
+1. Get the video
+================
+Make sure that you have a local copy of this video:
+  (find-1stclassvideo-links \"eev2021\")
+  (find-eev2021video)
+
+
+
+2. Prepare /tmp/subed-test/
+===========================
+The default for `ee-git-dir' is:
+
+  (setq ee-git-dir \"~/usrc/\")
+
+Here we will use \"/tmp/subed-test/\".
+
+# (setq ee-git-dir \"/tmp/subed-test/\")
+# (find-git-links \"https://github.com/sachac/subed\" \"subed\")
+# https://github.com/sachac/subed
+
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+rm -Rfv /tmp/subed-test/
+mkdir   /tmp/subed-test/
+cd      /tmp/subed-test/
+cp -v $S/http/anggtwu.net/eev-videos/emacsconf2021.mp4 a.mp4
+cp -v $S/http/anggtwu.net/eev-videos/emacsconf2021.vtt a.vtt
+cd      /tmp/subed-test/
+git clone https://github.com/sachac/subed
+cd      /tmp/subed-test/subed/
+
+# (setq ee-git-dir \"~/usrc/\")
+
+
+
+3. Load subed
+=============
+Run the red star lines below.
+To load subed from another place, skip the
+`add-to-list' in the first line.
+
+ (add-to-list 'load-path \"/tmp/subed-test/subed/subed/\")
+ (ee-locate-library \"subed.el\")
+
+ (require 'subed)
+ (require 'subed-mpv)
+ (require 'subed-vtt)
+ (code-c-d \"subed\"  \"/tmp/subed-test/subed/\")
+ (code-c-d \"subeds\" \"/tmp/subed-test/subed/subed/\")
+ (code-c-d \"subeds\" (ee-locate-library \"subed.el\"))
+
+ (find-subedfile \"\")
+ (find-subedsfile \"\")
+
+
+
+4. A test block in a .vtt
+=========================
+If everything is right then opening the \"a.vtt\" with the
+last sexp below will put it in subed-vtt-mode. Many of the
+sexps below are optional.
+
+ (setq subed-auto-find-video t)
+ (setq subed-auto-find-video nil)
+ (setq subed-mpv-arguments '(\"--osd-level=2\" \"--geometry=320x200-0+0\"))
+ (set-frame-parameter (selected-frame) 'fullscreen 'fullheight)
+ (set-frame-position (selected-frame) 0 0)
+ (set-frame-parameter (selected-frame) 'width {emacs-width})
+ (find-fline \"/tmp/subed-test/\")
+ (find-fline \"/tmp/subed-test/a.vtt\")
+
+Typing `M-x eeit' between two subtitles will insert a big test block
+in the .vtt. To run that test block, just type <f8>s on its red star
+lines.
+")
+     )
+   pos-spec-list)))
+
 
 
 
