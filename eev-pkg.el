@@ -1,0 +1,2 @@
+;; Generated package description from eev.el  -*- no-byte-compile: t -*-
+(define-package "eev" "20240710.0.20240710.214351" "Support for e-scripts (eepitch blocks, elisp hyperlinks, etc)" '((emacs "25.1")) :commit "8e242228e9987aa7ec2e708efd4b109311d778e2" :authors '(("Eduardo Ochs" . "eduardoochs@gmail.com")) :maintainer '("Eduardo Ochs" . "eduardoochs@gmail.com") :keywords '("lisp" "e-scripts") :url "http://anggtwu.net/#eev")
