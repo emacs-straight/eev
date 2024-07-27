@@ -1,3 +1,24 @@
+2024-07-26  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev.el: bumped the version.
+
+	* eev-videolinks.el (ee-1stclassvideos-info): new video:
+	"2024lean4of0".
+
+2024-07-25  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (ee-symbol-function): added a test for (fboundp
+	'closurep).
+
+	* eev-tlinks.el (find-package-vc-install-links): new function.
+
+2024-07-24  Eduardo Ochs  <eduardoochs@gmail.com>
+
+	* eev-blinks.el (ee-closure-to-lambda, ee-symbol-function): new
+	functions.
+	(ee-defun-sexp-for, ee-shortdefp, find-efunctionpp): use
+	`ee-symbol-function'.
+
 2024-07-22  Eduardo Ochs  <eduardoochs@gmail.com>
 
 	* eev-intro.el (find-lean4-intro): small changes.
