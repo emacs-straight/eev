@@ -19,7 +19,7 @@
 ;;
 ;; Author:     Eduardo Ochs <eduardoochs@gmail.com>
 ;; Maintainer: Eduardo Ochs <eduardoochs@gmail.com>
-;; Version:    20240803
+;; Version:    20240810
 ;; Keywords:   e-scripts
 ;;
 ;; Latest version: <http://anggtwu.net/eev-current/eev-intro.el>
@@ -15091,8 +15091,9 @@ sudo apt-get install -y emacs-el emacs-common-non-dfsg
 sudo apt-get install -y wget curl
 sudo apt-get install -y mpv
 sudo apt-get install -y xterm xpdf poppler-utils
+sudo apt-get install -y gcl gcl-doc
 sudo apt-get install -y sbcl sbcl-doc sbcl-source
-sudo apt-get install -y maxima maxima-doc gnuplot
+sudo apt-get install -y maxima maxima-doc maxima-share gnuplot
 sudo apt-get install -y lua5.1 lua5.1-dev lua5.1-doc
 sudo apt-get install -y lua5.2 lua5.2-dev lua5.2-doc
 sudo apt-get install -y lua5.3 lua5.3-dev
@@ -15131,6 +15132,11 @@ sudo apt-get install -y -f
 
 6. Learn the basics of Emacs and eev
 ====================================
+The best way to learn the basics is to start by copying this
+section to your ~/TODO file. This is explained in these pages:
+  http://anggtwu.net/2024-first-executable-notes.html
+  http://anggtwu.net/2024-restructuring.html
+
 The \"basics\" are these sections of the main tutorial,
 
   (find-eev-quick-intro \"2. Evaluating Lisp\")
@@ -15217,6 +15223,12 @@ and then try:
 
   (find-es \"maxima\" \"eev-demo\")
 
+Compare with:
+
+  (find-2022findeevangghsubs \"15:14\" \"run this eepitch-maxima (again)\")
+  (find-2022findeevanggvideo \"15:14\" \"run this eepitch-maxima (again)\")
+
+
 
 
 
@@ -15263,18 +15275,56 @@ See:
   (find-elisp-intro)
   (find-elisp-intro \"M-7 M-j\")
   (find-eev-quick-intro \"4. Creating Elisp Hyperlinks\")
+  (find-eev-quick-intro \"4.2. `find-ekey-links' and friends\")
+
 
 
 
 11. Edit your init file
 =======================
 See:
-  (find-eev-levels-intro \"0. Introduction\")
-  (find-eev-quick-intro \"7.1. `eejump'\")
-  (find-eev-quick-intro \"7.2. The list of eejump targets\")
-  (find-eev-quick-intro \"7.3. Defining eejump targets\")
-  (find-eev-quick-intro \"7.4. Commands with very short names\")
-  (find-eejumps 2 \"eejump-55\")
+  http://anggtwu.net/2024-find-dot-emacs-links.html
+  (find-dot-emacs-links)
+
+
+
+
+12. Install qdraw
+=================
+Qdraw is an extension of the default drawing functions
+that come with Maxima. It is explained here:
+
+  https://home.csulb.edu/~woollett/
+  https://home.csulb.edu/~woollett/mbe13.html
+  https://home.csulb.edu/~woollett/mbe13qdraw.pdf
+
+The easiest way to install qdraw is by running this
+eepitch block,
+
+ (eepitch-shell)
+ (eepitch-kill)
+ (eepitch-shell)
+  cd /tmp/
+  wget -N http://anggtwu.net/tmp/edrx-maxima.tgz
+  tar -C ~/ -xvzf /tmp/edrx-maxima.tgz
+
+that also installs my init file for Maxima and lots of
+small programs that I wrote. Note that the \"tar -xvzf\"
+above extracts the files from this .tgz file
+
+  (find-fline \"/tmp/edrx-maxima.tgz\")
+
+into these three directories:
+
+  (find-fline \"~/.maxima/\")
+  (find-fline \"~/MAXIMA/\")
+  (find-fline \"~/luatree/\")
+
+Here are some tests:
+
+  (find-qdraw-links \"x,x^2,x^3,x^4\" \"-2,2\" \"-2,2\")
+  (find-es \"maxima\" \"2024.1-intro-complex\")
+
 
 
 
