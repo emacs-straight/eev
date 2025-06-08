@@ -1,2 +1,2 @@
-;; Generated package description from eev.el  -*- mode: lisp-data; no-byte-compile: t -*-
-(define-package "eev" "20250216.0.20250305.175133" "Support for e-scripts (eepitch blocks, elisp hyperlinks, etc)" '((emacs "25.1")) :commit "7037317e4c1119f02955a98152f99e5ac01ce9a0" :authors '(("Eduardo Ochs" . "eduardoochs@gmail.com")) :maintainer '("Eduardo Ochs" . "eduardoochs@gmail.com") :keywords '("lisp" "e-scripts") :url "http://anggtwu.net/#eev")
+;; Generated package description from eev.el  -*- no-byte-compile: t -*-
+(define-package "eev" "20250607.0.20250607.11108" "Support for e-scripts (eepitch blocks, elisp hyperlinks, etc)" '((emacs "25.1")) :commit "0365f9a21b8494a2fab75838022141b364731e25" :authors '(("Eduardo Ochs" . "eduardoochs@gmail.com")) :maintainer '("Eduardo Ochs" . "eduardoochs@gmail.com") :keywords '("lisp" "e-scripts") :url "http://anggtwu.net/#eev")
